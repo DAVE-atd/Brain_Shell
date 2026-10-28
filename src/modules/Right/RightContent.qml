@@ -56,10 +56,7 @@ Item {
             localScale: root.localScale
             anchors.verticalCenter: parent.verticalCenter
         }
-        Clock{ 
-            localScale: root.localScale
-            anchors.verticalCenter: parent.verticalCenter
-        }
+        // Clock moved to the centre notch (CenterContent)
         SysTray{ 
             localScale: root.localScale
             anchors.verticalCenter: parent.verticalCenter

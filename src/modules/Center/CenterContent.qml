@@ -21,11 +21,12 @@ import QtQuick.Effects
 import Quickshell.Hyprland
 import Quickshell.Io
 import "../../"
+import "../Right"
 
 // CenterContent — scrollable dynamic island carousel.
 //
 // Active item order:
-//   "title"     — always present (default)
+//   "title"     — always present (default): the clock (was the window title)
 //   "music"     — MPRIS player present
 //   "timer"     — ClockState.timerRunning
 //   "stopwatch" — ClockState.swRunning
@@ -53,59 +54,6 @@ Item {
 	readonly property var    player:    MediaService.activePlayer
 	readonly property bool   isPlaying: MediaService.isPlaying
 	readonly property string artUrl:    MediaService.artUrl
-
-	property string activeTitle: "Desktop"
-
-	// ── App name helper ───────────────────────────────────────────────────────    
-	// 2. Process to fetch the initialTitle
-	property var _titleProc: Process {
-		command: ["hyprctl", "activewindow", "-j"]
-		running: false
-
-		stdout: StdioCollector {
-			id: titleOut
-		}
-
-		onExited: function(exitCode, exitStatus) {
-
-			var out = titleOut.text.trim()            
-			// Check for empty, Invalid, or empty JSON object
-			if (exitCode !== 0 || out === "" || out === "Invalid" || out === "{}") {
-				root.activeTitle = "Desktop"
-				return
-			}
-
-			try {
-				// Parse the JSON natively in Quickshell
-				var data = JSON.parse(out)
-				var title = data.initialTitle || ""
-
-				if (title !== "") {
-					// Capitalize the first letter (e.g., "kitty" -> "Kitty")
-					var finalTitle = title.charAt(0).toUpperCase() + title.slice(1)
-					root.activeTitle = finalTitle
-				} else {
-					root.activeTitle = "Desktop"
-				}
-			} catch(e) {
-				root.activeTitle = "Desktop"
-			}
-		}
-	}
-
-	Connections{
-		target: Hyprland
-		// 3. Your Raw Event Monitor
-		function onRawEvent(event) {
-			// 3. Trigger title fetch on any window/workspace focus change
-			var titleTriggers = ["workspace", "activewindow", "activespecial", "destroyworkspace", "closewindow", "changefloatingmode"]
-
-			if (titleTriggers.includes(event.name)) {
-				_titleProc.running = false
-				_titleProc.running = true
-			}
-		}
-	}
 
 	// ── Dynamic item list ─────────────────────────────────────────────────────
 	property var  _items:         ["title"]
@@ -309,16 +257,11 @@ Item {
 				width:  Math.round(Theme.cNotchMinWidth * localScale)
 				height: statusList.height
 
-				// ── Title ──────────────────────────────────────────────────────
-				Text {
-					anchors.fill: parent
-					visible:      modelData === "title"
-					text:         root.activeTitle
-					color:        Theme.text
-					font.pixelSize: Math.round(13 * localScale)
-					verticalAlignment:   Text.AlignVCenter
-					horizontalAlignment: Text.AlignHCenter
-					elide:        Text.ElideRight
+				// ── Clock (default item, key kept as "title") ──────────────────
+				Clock {
+					anchors.horizontalCenter: parent.horizontalCenter
+					visible:    modelData === "title"
+					localScale: root.localScale
 				}
 
 				// ── Music ──────────────────────────────────────────────────────

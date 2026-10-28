@@ -29,7 +29,7 @@ import "../services/"
 // Supported confirmAction values — all routed through scripts/PowerControl.sh:
 //   "shutdown"        → systemctl poweroff
 //   "reboot"          → systemctl reboot
-//   "logout"          → loginctl terminate-user $USER
+//   "logout"          → hyprctl dispatch exit (PowerControl.sh)
 //   "lock"            → loginctl lock-session
 //   "suspend"         → systemctl suspend
 //   "gpu-switch-envy" → pkexec scripts/GfxSwitch.sh <mode>, then systemctl reboot

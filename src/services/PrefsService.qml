@@ -33,7 +33,7 @@ QtObject {
     property bool focusModeHoverExpand: true
     property string defaultDashboardTab: "Home"
     property string defaultAudioTab: "Output"
-    property bool use24HourTime: false
+    property bool use24HourTime: true
     property bool alwaysShowBatteryPercentage: false
     property bool alwaysShowVolumePercentage: false
 
