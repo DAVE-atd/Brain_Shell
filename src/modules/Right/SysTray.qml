@@ -19,6 +19,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
@@ -156,11 +157,23 @@ RowLayout {
             }
             
             Image {
+                id: trayIcon
                 width: Math.round(16 * localScale)
                 height: Math.round(16 * localScale)
                 anchors.centerIn: parent
                 source: modelData.icon
                 smooth: true
+                visible: false
+            }
+
+            // Tinted with the matugen accent; original colours on hover / open menu
+            MultiEffect {
+                anchors.fill: trayIcon
+                source: trayIcon
+                colorization: trayHover.hovered || isMenuOpen ? 0 : 1
+                colorizationColor: Theme.active
+                brightness: trayHover.hovered || isMenuOpen ? 0 : 0.15
+                Behavior on colorization { NumberAnimation { duration: Anim.normal } }
             }
 
             QsMenuOpener {
