@@ -28,7 +28,7 @@ import "../Left"
 //
 // Active item order:
 //   "title"     — always present (default): the clock (was the window title)
-//   "music"     — MPRIS player present
+//   "music"     — disabled (never added in _rebuildItems)
 //   "timer"     — ClockState.timerRunning
 //   "stopwatch" — ClockState.swRunning
 //
@@ -69,7 +69,7 @@ Item {
 		? _items[_carouselIndex] : "title"
 
 		var list = ["title"]
-		if (PrefsService.enableVisualiser && (root.player !== null || CavaService.audioActive)) list.push("music")
+		// "music" (player + visualiser) intentionally left out: the centre shows only the clock
 		if (ClockState.timerStarted)                   list.push("timer")
 		if (ClockState.swStarted)                      list.push("stopwatch")
 		if (ShellState.screenRecord && !ScreenRecService.recording) list.push("record_setup")
