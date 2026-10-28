@@ -88,7 +88,7 @@ QtObject {
             Popups.audioPage = page
         } else if (!Popups.audioOpen) {
             Popups.audioPage = page
-            SurfaceState.open("rightCenter", "audio")
+            SurfaceState.open("right", "audio")
             Popups.audioPinned = true
         } else {
             SurfaceState.close()
@@ -109,6 +109,16 @@ QtObject {
     property var audioIn: IpcHandler {
         target: "audioIn-toggle"
         function toggle() { _openAudio("input") }
+    }
+
+    property var battery: IpcHandler {
+        target: "battery-toggle"
+        function toggle() {
+            if (Popups.batteryOpen) { SurfaceState.close(); return }
+            Popups.closeAll()
+            SurfaceState.open("right", "battery")
+            Popups.batteryPinned = true
+        }
     }
 
     // ── Network Toggles ──────────────────────────────────────

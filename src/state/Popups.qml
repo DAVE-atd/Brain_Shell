@@ -70,6 +70,7 @@ QtObject {
     
     // ── Per-popup pinned state (ignores hover-leave) ──────────────────────────
     property bool audioPinned:         false
+    property bool batteryPinned:       false
     property bool networkPinned:       false
     property bool notificationsPinned: false
     property bool archMenuPinned:      false
@@ -96,6 +97,7 @@ QtObject {
     // ── Per-popup trigger hover state ─────────────────────────────────────────
     property bool archMenuTriggerHovered:      false
     property bool audioTriggerHovered:         false
+    property bool batteryTriggerHovered:       false
     property bool networkTriggerHovered:       false
     property bool notificationsTriggerHovered: false
     property bool wallpaperTriggerHovered:     false
@@ -112,6 +114,7 @@ QtObject {
     property bool quickAllowHover:         PrefsService.globalHoverMode && PrefsService.hoverQuick
     property bool dashboardAllowHover:     PrefsService.globalHoverMode && PrefsService.hoverDashboard
     property bool networkAllowHover:     PrefsService.globalHoverMode && PrefsService.hoverNetwork
+    property bool batteryAllowHover:     PrefsService.globalHoverMode && PrefsService.hoverNetwork
 
     // ── Universal popup behavior settings ─────────────────────────────────────
     property int  slideDuration:   Anim.transition
@@ -160,6 +163,7 @@ QtObject {
         isInputFocused      = false
         miniPlayerOpen      = false
         audioPinned         = false
+        batteryPinned       = false
         networkPinned       = false
         notificationsPinned = false
         archMenuPinned      = false

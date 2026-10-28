@@ -48,9 +48,10 @@ QtObject {
     property bool notchMusicVisible: false
     property bool dashboardVisible: false
     property bool miniPlayerVisible: false
+    property bool soundPopupVisible: false
 
     readonly property bool _anyConsumerVisible:
-        notchMusicVisible || dashboardVisible || miniPlayerVisible
+        notchMusicVisible || dashboardVisible || miniPlayerVisible || soundPopupVisible
 
     // 5s grace period after last consumer closes to prevent flicker
     property bool _recentlyActive: false

@@ -23,7 +23,7 @@ import "../../"
 Item {
     property real localScale: 1.0
     // Set to true to always show percentage beside the icon.
-    // When false (default), percentage only shows on hover.
+    // The details live in the battery drop-down (hover/click).
     property bool showPercentage: PrefsService.alwaysShowBatteryPercentage
 
     implicitWidth:  status.implicitWidth
@@ -38,11 +38,19 @@ Item {
         showPercentage:   parent.showPercentage
     }
 
-    // MouseArea {
-    //     anchors.fill: parent
-    //     onClicked: {
-    //         Popups.closeAll()
-    //         SurfaceState.toggle("right", "battery")
-    //     }
-    // }
+    HoverHandler { onHoveredChanged: Popups.batteryTriggerHovered = hovered }
+
+    MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: {
+            if (!Popups.batteryOpen) {
+                Popups.closeAll()
+                SurfaceState.open("right", "battery")
+                Popups.batteryPinned = true
+            } else {
+                SurfaceState.close()
+            }
+        }
+    }
 }

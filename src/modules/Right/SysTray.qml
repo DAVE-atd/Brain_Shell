@@ -37,7 +37,8 @@ RowLayout {
         orientation: ListView.Horizontal
         spacing: Math.round(4 * localScale)
         
-        property bool isOpen: false
+        // Always expanded: every tray app is visible (no toggle button)
+        property bool isOpen: true
         property int activeMenuIndex: -1
         property real targetContentX: 0
 
@@ -58,9 +59,6 @@ RowLayout {
         }
         
         onCountChanged: {
-            if (count === 0) {
-                isOpen = false
-            }
             var viewWidth = isOpen ? Math.min(calculatedWidth, Layout.maximumWidth) : width
             var maxScroll = Math.max(0, calculatedWidth - viewWidth)
             if (trayRow.contentX > maxScroll) {
@@ -96,7 +94,7 @@ RowLayout {
 
         visible: opacity > 0
         opacity: isOpen ? 1 : 0
-        Layout.maximumWidth: Math.round(60 * localScale)
+        Layout.maximumWidth: calculatedWidth
         property real calculatedWidth: trayRow.count > 0 ? (trayRow.count * Math.round(26 * localScale)) + ((trayRow.count - 1) * spacing) : 0
         Layout.preferredWidth: isOpen ? Math.min(calculatedWidth, Layout.maximumWidth) : 0
         Layout.preferredHeight: Math.round(26 * localScale)
@@ -286,11 +284,4 @@ RowLayout {
         }
     }
 
-    // Tray Toggle Button
-    IconBtn {
-        localScale: root.localScale
-        Layout.alignment: Qt.AlignVCenter
-        text: trayRow.isOpen ? "" : ""
-        onClicked: trayRow.isOpen = !trayRow.isOpen
-    }
 }

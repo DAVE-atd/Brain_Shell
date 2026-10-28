@@ -149,7 +149,7 @@ Item {
         
         Item {
             id: pctWrapper
-            property bool show: root.showPercentage || hov.hovered
+            property bool show: root.showPercentage
             implicitWidth: show ? pctText.implicitWidth + Math.round(2 * localScale) : 0
             implicitHeight: pctText.implicitHeight
             clip: true

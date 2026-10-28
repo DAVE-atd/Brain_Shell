@@ -169,13 +169,11 @@ PanelWindow {
         
         rcnDepth: { 
             if (!SurfaceState.isRightCenterExpanded) return 0.001; 
-            if (SurfaceState.activeContent === "audio") return audioPopupView.popupWidth; 
             if (SurfaceState.activeContent === "quick") return quickControlPopupView.popupWidth; 
             return Math.round(Theme.popupMaxWidth * root.localScale); 
         } 
         rcnHeight: { 
             if (!SurfaceState.isRightCenterExpanded) return 0.001; 
-            if (SurfaceState.activeContent === "audio") return audioPopupView.popupHeight; 
             if (SurfaceState.activeContent === "quick") return quickControlPopupView.popupHeight; 
             return Math.round(Theme.popupMaxHeight * root.localScale); 
         }
@@ -227,6 +225,8 @@ PanelWindow {
                 return Math.max(Math.round(Theme.rNotchMinWidth * localScale), Math.min(Math.round(Theme.rNotchMaxWidth * localScale), rightContent.implicitWidth + Math.round(Theme.notchPadding * 2 * localScale)));
             }
             if (SurfaceState.activeContent === "network") return Math.round(Theme.networkPopupWidth * root.localScale) + Math.round(Theme.cornerRadius * root.localScale);
+            if (SurfaceState.activeContent === "audio") return soundPopupView.popupWidth + Math.round(Theme.cornerRadius * root.localScale);
+            if (SurfaceState.activeContent === "battery") return batteryPopupView.popupWidth + Math.round(Theme.cornerRadius * root.localScale);
             if (SurfaceState.activeContent === "notifications") return notifsPopupView.popupWidth + Math.round(Theme.cornerRadius * root.localScale);
             return Math.round(Theme.popupMaxWidth * root.localScale);
         }
@@ -237,6 +237,8 @@ PanelWindow {
                 return Math.round(Theme.notchHeight * root.localScale);
             }
             if (SurfaceState.activeContent === "network") return Math.round(648 * root.localScale);
+            if (SurfaceState.activeContent === "audio") return soundPopupView.popupHeight;
+            if (SurfaceState.activeContent === "battery") return batteryPopupView.popupHeight;
             if (SurfaceState.activeContent === "notifications") return notifsPopupView.targetHeight;
             return Math.round(Theme.popupMaxHeight * root.localScale);
         }
@@ -377,6 +379,34 @@ PanelWindow {
             Behavior on opacity { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve; easing.overshoot: Anim.globalOvershoot; easing.amplitude: Anim.globalAmplitude; easing.period: Anim.globalPeriod } }
         }
 
+        SoundPopup {
+            id: soundPopupView
+            localScale: root.localScale
+            anchors.top: parent.top
+            anchors.topMargin: Math.round(Theme.notchHeight * root.localScale)
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: Math.round(Theme.cornerRadius * root.localScale)
+            height: popupHeight - Math.round(Theme.notchHeight * root.localScale)
+            opacity: SurfaceState.activeContent === "audio" ? 1 : 0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve; easing.overshoot: Anim.globalOvershoot; easing.amplitude: Anim.globalAmplitude; easing.period: Anim.globalPeriod } }
+        }
+
+        BatteryPopup {
+            id: batteryPopupView
+            localScale: root.localScale
+            anchors.top: parent.top
+            anchors.topMargin: Math.round(Theme.notchHeight * root.localScale)
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: Math.round(Theme.cornerRadius * root.localScale)
+            height: popupHeight - Math.round(Theme.notchHeight * root.localScale)
+            opacity: SurfaceState.activeContent === "battery" ? 1 : 0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve; easing.overshoot: Anim.globalOvershoot; easing.amplitude: Anim.globalAmplitude; easing.period: Anim.globalPeriod } }
+        }
+
         NotificationsPopup {
             id: notifsPopupView
             localScale: root.localScale
@@ -437,17 +467,6 @@ PanelWindow {
         anchors.right: parent.right
         anchors.rightMargin: Math.round(Theme.borderWidth * root.localScale)
         anchors.verticalCenter: parent.verticalCenter
-
-        AudioPopup {
-            id: audioPopupView
-            localScale: root.localScale
-            anchors.fill: parent
-            opacity: SurfaceState.activeContent === "audio" ? 1 : 0
-
-            visible: opacity > 0
-
-            Behavior on opacity { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve; easing.overshoot: Anim.globalOvershoot; easing.amplitude: Anim.globalAmplitude; easing.period: Anim.globalPeriod } }
-        }
 
         QuickControl {
             id: quickControlPopupView

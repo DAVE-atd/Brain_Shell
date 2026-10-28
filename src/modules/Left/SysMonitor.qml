@@ -19,9 +19,12 @@
 import QtQuick
 import "../../"
 import "../../services"
+import "../../components"
 
-// SysMonitor — temp / memory / cpu / disk in a capsule (takes the place of
-// Workspaces in LeftContent). Values turn yellow/red near their limits.
+// SysMonitor — temp / memory / cpu / disk as small ring gauges in a capsule
+// (takes the place of Workspaces in LeftContent). The ring shows the share,
+// the temperature ring shows its value as a number. Rings turn yellow/red
+// near their limits.
 // Click opens the dashboard System tab.
 
 Rectangle {
@@ -49,8 +52,8 @@ Rectangle {
 
     color:  Theme.wsBackground
     radius: Math.round(Theme.wsRadius * localScale)
-    width:  row.implicitWidth + Math.round(Theme.wsPadding * 4 * localScale)
-    height: Math.round(Theme.wsDotSize * localScale) + Math.round(Theme.wsPadding * 2 * localScale)
+    width:  row.implicitWidth + Math.round(Theme.wsPadding * 2 * localScale)
+    height: Math.round(30 * localScale)
 
     border.color: hov.hovered ? Qt.rgba(Theme.active.r, Theme.active.g, Theme.active.b, 0.5) : "transparent"
     border.width: Math.max(1, Math.round(1 * localScale))
@@ -59,38 +62,43 @@ Rectangle {
     Row {
         id: row
         anchors.centerIn: parent
-        spacing: Math.round(10 * localScale)
+        spacing: Math.round(7 * localScale)
 
-        Stat { icon: "󰔏"; value: thermal.cpuTemp > 0 ? Math.round(thermal.cpuTemp) + "°" : "—"; tint: root._level(thermal.cpuTemp, 80, 90) }
-        Stat { icon: "󰍛"; value: mem.usagePercent + "%"; tint: root._level(mem.usagePercent, 80, 92) }
-        Stat { icon: "󰻠"; value: cpu.usagePercent + "%"; tint: root._level(cpu.usagePercent, 75, 95) }
-        Stat { icon: "󰋊"; value: root._diskPct + "%"; tint: root._level(root._diskPct, 85, 95) }
+        // Temperature: 100 °C = full ring, the number inside
+        Stat { value: thermal.cpuTemp / 100; label: thermal.cpuTemp > 0 ? Math.round(thermal.cpuTemp) : "–"; tint: root._level(thermal.cpuTemp, 80, 90) }
+        Stat { value: mem.usagePercent / 100; icon: "󰍛"; tint: root._level(mem.usagePercent, 80, 92) }
+        Stat { value: cpu.usagePercent / 100; icon: "󰻠"; tint: root._level(cpu.usagePercent, 75, 95) }
+        Stat { value: root._diskPct / 100;    icon: "󰋊"; tint: root._level(root._diskPct, 85, 95) }
     }
 
     HoverHandler { id: hov; cursorShape: Qt.PointingHandCursor }
     MouseArea { anchors.fill: parent; onClicked: IpcManager.dashboardStats.toggle() }
 
-    component Stat: Row {
-        property string icon
-        property string value
+    component Stat: Item {
+        id: st
+        property real   value
+        property string icon:  ""
+        property string label: ""
         property color  tint
-        spacing: Math.round(4 * root.localScale)
+        readonly property color _accent: tint === Theme.text ? Theme.active : tint
+
+        width:  Math.round(22 * root.localScale)
+        height: width
         anchors.verticalCenter: parent.verticalCenter
 
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            text: parent.icon
-            font.pixelSize: Math.round(13 * root.localScale)
-            color: parent.tint === Theme.text ? Theme.active : parent.tint
-            Behavior on color { ColorAnimation { duration: Anim.normal } }
+        Ring {
+            anchors.fill: parent
+            value: st.value
+            thickness: Math.max(2, Math.round(2.2 * root.localScale))
+            color: st._accent
+            trackColor: Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.10)
         }
         Text {
-            anchors.verticalCenter: parent.verticalCenter
-            text: parent.value
-            // fixed width so the capsule doesn't jitter when digits change
-            width: Math.max(implicitWidth, Math.round(26 * root.localScale))
-            font.pixelSize: Math.round(11 * root.localScale); font.weight: Font.Medium
-            color: parent.tint
+            anchors.centerIn: parent
+            text: st.label !== "" ? st.label : st.icon
+            font.pixelSize: Math.round((st.label !== "" ? 9 : 11) * root.localScale)
+            font.weight: Font.DemiBold
+            color: st.label !== "" ? st.tint : st._accent
             Behavior on color { ColorAnimation { duration: Anim.normal } }
         }
     }

@@ -48,6 +48,7 @@ Item {
 
     HoverHandler {
         id: hov
+        onHoveredChanged: Popups.audioTriggerHovered = hovered
     }
 
     Row {
@@ -66,7 +67,7 @@ Item {
 
         Item {
             id: pctWrapper
-            property bool show: root.showPercentage || hov.hovered
+            property bool show: root.showPercentage
             implicitWidth: show ? pctText.implicitWidth + Math.round(2 * localScale) : 0
             implicitHeight: pctText.implicitHeight
             clip: true
@@ -94,12 +95,18 @@ Item {
                     root.sink.audio.muted = !root.sink.audio.muted
             } else {
                 if (!Popups.audioOpen) {
-                    SurfaceState.open("rightCenter", "audio")
+                    Popups.closeAll()
+                    SurfaceState.open("right", "audio")
                     Popups.audioPinned = true
                 } else {
                     SurfaceState.close()
                 }
             }
+        }
+        onWheel: function(wheel) {
+            if (!root.sink?.ready) return
+            root.sink.audio.muted = false
+            root.sink.audio.volume = Math.max(0, Math.min(1, root.sink.audio.volume + (wheel.angleDelta.y > 0 ? 0.05 : -0.05)))
         }
     }
 }

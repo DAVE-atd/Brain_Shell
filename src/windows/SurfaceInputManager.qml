@@ -53,6 +53,7 @@ Item {
         else if (SurfaceState.activeContent === "archMenu") Popups.archMenuPinned = true;
         else if (SurfaceState.activeContent === "clipboard") Popups.clipboardPinned = true;
         else if (SurfaceState.activeContent === "audio") Popups.audioPinned = true;
+        else if (SurfaceState.activeContent === "battery") Popups.batteryPinned = true;
         else if (SurfaceState.activeContent === "quick") Popups.quickPinned = true;
         else if (SurfaceState.activeContent === "notifications") Popups.notificationsPinned = true;
     }
@@ -64,7 +65,7 @@ Item {
     }
 
     // --- GLOBAL HOVER MANAGER ---
-    property bool _anyTriggerHovered: Popups.dashboardTriggerHovered || Popups.archMenuTriggerHovered || Popups.audioTriggerHovered || Popups.networkTriggerHovered || Popups.notificationsTriggerHovered || Popups.wallpaperTriggerHovered || Popups.quickTriggerHovered || Popups.clipboardTriggerHovered
+    property bool _anyTriggerHovered: Popups.dashboardTriggerHovered || Popups.archMenuTriggerHovered || Popups.audioTriggerHovered || Popups.batteryTriggerHovered || Popups.networkTriggerHovered || Popups.notificationsTriggerHovered || Popups.wallpaperTriggerHovered || Popups.quickTriggerHovered || Popups.clipboardTriggerHovered
     
     property bool _activeSurfaceHovered: {
         if (SurfaceState.activeSurface === "top") return isTopHovered;
@@ -102,7 +103,8 @@ Item {
             if (Date.now() - SurfaceState.lastCloseTime < 400) return;
             if (Popups.dashboardTriggerHovered && Popups.dashboardAllowHover) { Popups.closeAll(); SurfaceState.open("top", "dashboard") }
             else if (Popups.archMenuTriggerHovered && Popups.archMenuAllowHover) { Popups.closeAll(); SurfaceState.open("leftCenter", "archMenu") }
-            else if (Popups.audioTriggerHovered && Popups.audioAllowHover) { Popups.closeAll(); SurfaceState.open("rightCenter", "audio") }
+            else if (Popups.audioTriggerHovered && Popups.audioAllowHover) { Popups.closeAll(); SurfaceState.open("right", "audio") }
+            else if (Popups.batteryTriggerHovered && Popups.batteryAllowHover) { Popups.closeAll(); SurfaceState.open("right", "battery") }
             else if (Popups.networkTriggerHovered && Popups.networkAllowHover) { Popups.closeAll(); SurfaceState.open("right", "network") } 
             else if (Popups.notificationsTriggerHovered && Popups.notificationsAllowHover) { Popups.closeAll(); SurfaceState.open("right", "notifications") }
             else if (Popups.wallpaperTriggerHovered && Popups.wallpaperAllowHover) { Popups.closeAll(); SurfaceState.open("bottomCenter", "wallpaper") }
@@ -120,6 +122,7 @@ Item {
                 if (SurfaceState.activeContent === "dashboard" && Popups.dashboardPinned) return;
                 if (SurfaceState.activeContent === "archMenu" && Popups.archMenuPinned) return;
                 if (SurfaceState.activeContent === "audio" && Popups.audioPinned) return;
+                if (SurfaceState.activeContent === "battery" && Popups.batteryPinned) return;
                 if (SurfaceState.activeContent === "network" && Popups.networkPinned) return;
                 if (SurfaceState.activeContent === "notifications" && Popups.notificationsPinned) return;
                 if (SurfaceState.activeContent === "wallpaper" && Popups.wallpaperPinned) return;
@@ -165,37 +168,19 @@ Item {
         MouseArea { 
             anchors.fill: parent
             onClicked: {
-                if (Popups.audioOpen && Popups.audioAllowHover) {
-                    Popups.audioPinned = !Popups.audioPinned
-                    return
-                }
                 if (SurfaceState.activeContent === "quick" && Popups.quickAllowHover) {
                     Popups.quickPinned = !Popups.quickPinned
                     return
                 }
-                if (!Popups.audioAllowHover && !Popups.quickAllowHover) {
-                    if (Popups.audioOpen) {
-                        SurfaceState.toggle("rightCenter", "audio")
-                    } else if (SurfaceState.activeContent === "quick") {
-                        SurfaceState.toggle("rightCenter", "quick")
-                    } else {
-                        SurfaceState.toggle("rightCenter", "quick")
-                        Popups.quickPinned = true
-                    }
+                if (!Popups.quickAllowHover) {
+                    var next = (SurfaceState.activeContent !== "quick")
+                    SurfaceState.toggle("rightCenter", "quick")
+                    if (next) Popups.quickPinned = true
                 }
             }
         }
         HoverHandler {
-            onHoveredChanged: {
-                Popups.quickTriggerHovered = Popups.audioOpen ? false : hovered  
-                Popups.audioTriggerHovered = hovered
-            }
-        }
-        Connections {
-            target: Popups
-            function onAudioOpenChanged() {
-                Popups.quickTriggerHovered = Popups.audioOpen ? false : rightCenterNotchHover.hovered
-            }
+            onHoveredChanged: Popups.quickTriggerHovered = hovered
         }
     }
     Item { 
