@@ -35,6 +35,9 @@ ShellRoot {
     property var _ipc:      IpcManager
     property var _migrator: MigrationService
 
+    // ── Orbit Bluetooth background services (see popups/BluetoothTab.qml) ──────
+    OrbitHost {}
+
     // ── Wallpaper carousel (wallpaper-toggle IPC) ─────────────────────────────
     WallpaperCarousel { id: wallpaperCarousel }
     Connections {

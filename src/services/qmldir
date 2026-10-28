@@ -22,4 +22,5 @@ MiscPage ./config_tab/MiscPage.qml
 singleton BrightnessService BrightnessService.qml
 singleton NetworkService NetworkService.qml
 singleton TailscaleService TailscaleService.qml
+OrbitHost OrbitHost.qml
 singleton MigrationService MigrationService.qml

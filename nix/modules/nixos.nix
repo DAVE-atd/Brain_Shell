@@ -67,6 +67,7 @@ in
     fonts.packages = with pkgs; [
       nerd-fonts.jetbrains-mono
       nerd-fonts.symbols-only
+      material-symbols # icon font of vendored DMS plugins (Orbit Bluetooth)
     ];
 
     environment.variables = {

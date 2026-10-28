@@ -716,6 +716,8 @@ Brain_Shell is actively developed and welcomes contributions!
 - **[Dhruv Nair](https://github.com/Nair3091):** For the pre-alpha testing and post-release loyalty.
 - **[NotCandy001](https://github.com/notcandy001):** For the installer
 - **[SiriKedas](https://github.com/sirikedas):** For the new architecture Idea and time.
+- **[Orbit Bluetooth](https://github.com/lung595/orbitBluetooth)** by lung595 (MIT): the orbit view of the Bluetooth tab, vendored in `src/vendor/orbitBluetooth` and run through a small DMS compatibility layer (`Common/`, `Services/`, `Widgets/`)
+- **[Wallpaper Carousel](https://github.com/motor-dev/wallpaperCarousel)** by yngwe (MIT), based on [ilyamiro](https://github.com/ilyamiro/nixos-configuration)'s picker: the wallpaper carousel
 - **All the Testers & Contributors:** For their time put into testing and suggesting fixes.
   > Brain_Shell has recently been Endorsed by [theyh4t3-ashlxy](https://github.com/theyh4t3-ashlxy).
   > Menace of the Discord Server. They show up, vibe code, complain about the shell, aggressively support it anyway, and somehow keeps the server alive.
