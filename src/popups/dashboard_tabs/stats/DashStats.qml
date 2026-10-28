@@ -35,6 +35,9 @@ Item {
     DiskService        { id: disk;    active: root.visible }
     EnvyControlService { id: envy }
     CpuFreqService     { id: cpuFreq; active: root.visible }
+    BatteryService     { id: battery; active: root.visible }
+    ProcService        { id: procs;   active: root.visible && !fan.available }
+    PowerProfileService { id: ppd;    active: root.visible }
     GpuService {
         id:       gpu
         active:   root.visible
@@ -97,15 +100,34 @@ Item {
                     anchors.centerIn: parent
                     size:        localScale
                     label:       "iGPU"
-                    percent:     gpu.igpu.freqPercent
-                    centerText:  gpu.igpu.freqPercent + "%"
+                    percent:     gpu.igpu.busyPercent
+                    centerText:  gpu.igpu.busyPercent + "%"
                     bottomText:  gpu.igpu.curMhz
                     active:      true
                     accentColor: "#89dceb"
                 }
             }
 
+            // Without NVIDIA: battery power draw instead of the dGPU gauge
             StatCard {
+                visible: !gpu.hasNvidia
+                localScale: root.localScale
+                width:  (parent.width - parent.spacing * 3) / 4
+                height: parent.height
+                Speedometer {
+                    anchors.centerIn: parent
+                    size:        localScale
+                    label:       "Power"
+                    percent:     Math.min(100, battery.watts / 45 * 100)
+                    centerText:  battery.available ? battery.wattsStr : "—"
+                    bottomText:  battery.available ? battery.capacity + "% · " + battery.status : "No battery"
+                    active:      battery.available
+                    accentColor: battery.status === "Charging" ? "#a6e3a1" : "#f9e2af"
+                }
+            }
+
+            StatCard {
+                visible: gpu.hasNvidia
                 localScale: root.localScale
                 width:  (parent.width - parent.spacing * 3) / 4
                 height: parent.height
@@ -149,9 +171,18 @@ Item {
                 padding: Math.round(6 * localScale)
                 
                 FanPanel {
+                    visible:      fan.available
                     anchors.fill: parent
                     localScale:   root.localScale
                     service:      fan
+                }
+
+                // No nbfc: show what is using the CPU instead
+                ProcPanel {
+                    visible:      !fan.available
+                    anchors.fill: parent
+                    localScale:   root.localScale
+                    service:      procs
                 }
             }
         }
@@ -193,7 +224,7 @@ Item {
                 PowerPanel {
                     anchors.fill:   parent
                     localScale:     root.localScale
-                    cpuFreqService: cpuFreq
+                    ppdService:     ppd
                     envyService:    envy
                 }
             }

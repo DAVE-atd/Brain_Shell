@@ -19,7 +19,7 @@
 import QtQuick
 import Quickshell.Io
 
-// Runs df every 5s and exposes real block devices as a list model.
+// Runs df every 5s and exposes real block devices (one entry per device).
 //
 // Exposes:
 //   var disks — ListModel with objects:
@@ -58,6 +58,7 @@ QtObject {
     function _parse(text) {
         var lines  = text.trim().split("\n")
         var result = []
+        var seen   = {}
 
         for (var i = 0; i < lines.length; i++) {
             var parts = lines[i].trim().split(/\s+/)
@@ -69,6 +70,11 @@ QtObject {
             var used   = parts[2]   // e.g. "180000M"
             var pct    = parts[3]   // e.g. "78%"
             var mount  = parts[4]
+
+            // btrfs subvolumes share one device — list each device once
+            // (df prints "/" first, so the root mount wins)
+            if (seen[source]) continue
+            seen[source] = true
 
             // Shorten source: /dev/nvme0n1p2 → nvme0n1p2, /dev/sda1 → sda1
             var shortSource = source.replace("/dev/", "")

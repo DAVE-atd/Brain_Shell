@@ -25,6 +25,8 @@ import Quickshell.Io
 // Exposes:
 //   real   cpuTemp      — CPU package temp °C, 0 if unread
 //   real   gpuTemp      — NVIDIA GPU temp °C, 0 if unread/off
+//   real   ssdTemp      — NVMe composite temp °C, 0 if no NVMe sensor
+//   string ssdTempStr   — e.g. "38°C" or "—"
 //   int    fan1Rpm      — fan1 speed RPM, 0 if not present
 //   int    fan2Rpm      — fan2 speed RPM, 0 if not present
 //   int    fanCount     — number of fans detected (0, 1, or 2)
@@ -40,11 +42,13 @@ QtObject {
     property bool   hasNvidia:  false
     property real   cpuTemp:    0
     property real   gpuTemp:    0
+    property real   ssdTemp:    0
     property int    fan1Rpm:    0
     property int    fan2Rpm:    0
     property int    fanCount:   0
     property string cpuTempStr: "—"
     property string gpuTempStr: "—"
+    property string ssdTempStr: "—"
     property string fan1Str:    "—"
     property string fan2Str:    "—"
 
@@ -103,10 +107,25 @@ QtObject {
     function _parse(text) {
         var lines = text.split("\n")
         var pkg   = -1
+        var ssd   = -1
         var fans  = []
+        var chip  = ""
 
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i]
+
+            // Chip header — e.g. "nvme-pci-0100" (no indent, no colon)
+            if (line !== "" && !/^\s/.test(line) && line.indexOf(":") < 0) {
+                chip = line
+                continue
+            }
+
+            // NVMe temp — first "Composite:" of the first nvme chip
+            if (ssd < 0 && chip.indexOf("nvme") === 0 && /^Composite:/.test(line)) {
+                var nm = line.match(/\+([0-9.]+)°C/)
+                if (nm) ssd = parseFloat(nm[1])
+                continue
+            }
 
             // CPU package temp — "Package id 0:  +52.0°C"
             if (/Package id 0:/i.test(line)) {
@@ -126,6 +145,11 @@ QtObject {
         if (pkg >= 0) {
             root.cpuTemp    = pkg
             root.cpuTempStr = pkg.toFixed(0) + "°C"
+        }
+
+        if (ssd >= 0) {
+            root.ssdTemp    = ssd
+            root.ssdTempStr = ssd.toFixed(0) + "°C"
         }
 
         root.fanCount = fans.length

@@ -58,11 +58,12 @@ Item {
         Speedometer {
             size:        root.s
             label:       ""
-            percent:     root.dgpuActive ? Math.min(100, service.gpuTemp) : 0
-            centerText:  root.dgpuActive ? service.gpuTempStr : "—"
-            bottomText:  "GPU"
-            active:      root.dgpuActive
-            accentColor: root.tempColor(service.gpuTemp)
+            // No dGPU: NVMe temp instead
+            percent:     Math.min(100, root.dgpuActive ? service.gpuTemp : service.ssdTemp)
+            centerText:  root.dgpuActive ? service.gpuTempStr : service.ssdTempStr
+            bottomText:  root.dgpuActive ? "GPU" : "SSD"
+            active:      root.dgpuActive || service.ssdTemp > 0
+            accentColor: root.tempColor(root.dgpuActive ? service.gpuTemp : service.ssdTemp)
         }
 
         Rectangle {
@@ -80,8 +81,8 @@ Item {
             centerText:  service.fan1Rpm > 999
                              ? (service.fan1Rpm / 1000).toFixed(1) + "k"
                              : service.fan1Rpm + ""
-            bottomText:  "Fan 1"
-            active:      service.fan1Rpm > 0
+            bottomText:  service.fan1Rpm > 0 ? "Fan 1" : "Fan 1 · idle"
+            active:      true
             accentColor: "#89dceb"
         }
 
@@ -93,8 +94,8 @@ Item {
             centerText:  service.fan2Rpm > 999
                              ? (service.fan2Rpm / 1000).toFixed(1) + "k"
                              : service.fan2Rpm + ""
-            bottomText:  "Fan 2"
-            active:      service.fan2Rpm > 0
+            bottomText:  service.fan2Rpm > 0 ? "Fan 2" : "Fan 2 · idle"
+            active:      true
             accentColor: "#89dceb"
         }
     }

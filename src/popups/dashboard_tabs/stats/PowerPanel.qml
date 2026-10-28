@@ -25,7 +25,7 @@ Item {
     id: root
 
     property real localScale: 1.0
-    required property var cpuFreqService
+    required property var ppdService
     required property var envyService
 
     Column {
@@ -36,40 +36,43 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: Math.round(8 * localScale)
 
-            // Label + lock icon hinting auto-cpufreq manages this
-            Row {
+            Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                spacing: Math.round(5 * localScale)
-
-                Text {
-                    text:           "󰌾"
-                    font.pixelSize: Math.round(11 * localScale)
-                    color:          Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.25)
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                Text {
-                    text:           "Power Profile"
-                    font.pixelSize: Math.round(11 * localScale)
-                    font.weight:    Font.Medium
-                    color:          Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.4)
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+                text:           "Power Profile"
+                font.pixelSize: Math.round(11 * localScale)
+                font.weight:    Font.Medium
+                color:          Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.4)
             }
 
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: Math.round(6 * localScale)
+                visible: root.ppdService.available
 
-                ProfileButton {
-                    localScale: root.localScale
-                    label:     root.cpuFreqService.activeProfile === "performance" ? "Performance" : "Power Saver"
-                    active:    true
-                    enabled:   true
+                Repeater {
+                    model: root.ppdService.profiles
+                    delegate: ProfileButton {
+                        required property string modelData
+                        localScale: root.localScale
+                        label:   ({ "power-saver": "Saver", "balanced": "Balanced", "performance": "Performance" })[modelData] || modelData
+                        active:  root.ppdService.profile === modelData
+                        enabled: !root.ppdService.busy
+                        onClicked: root.ppdService.set(modelData)
+                    }
                 }
+            }
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                visible:        !root.ppdService.available
+                text:           "power-profiles-daemon not running"
+                font.pixelSize: Math.round(12 * localScale)
+                color:          Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.3)
             }
         }
 
         Rectangle {
+            visible: envyService.available
             anchors.horizontalCenter: parent.horizontalCenter
             width:  Math.round(200 * localScale)
             height: 1
@@ -114,28 +117,6 @@ Item {
                 text:           "GPU mode switch requires a reboot"
                 font.pixelSize: Math.round(10 * localScale)
                 color:          Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.25)
-            }
-        }
-
-        // Fallback for missing envycontrol
-        Column {
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: Math.round(8 * localScale)
-            visible: !envyService.available
-
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text:           "GPU Mode"
-                font.pixelSize: Math.round(11 * localScale)
-                font.weight:    Font.Medium
-                color:          Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.4)
-            }
-
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text:           "EnvyControl not installed"
-                font.pixelSize: Math.round(12 * localScale)
-                color:          Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.3)
             }
         }
     }

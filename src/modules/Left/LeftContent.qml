@@ -32,8 +32,8 @@ Row {
 		anchors.verticalCenter: parent.verticalCenter
 	}
 
-	// 2. Workspaces
-	Workspaces { 
+	// 2. System monitor (temp / mem / cpu / disk) — replaces Workspaces
+	SysMonitor {
 		localScale: parent.localScale
 		anchors.verticalCenter: parent.verticalCenter
 	} 

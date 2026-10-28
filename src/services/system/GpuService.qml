@@ -19,10 +19,11 @@
 import QtQuick
 import Quickshell.Io
 
-// Intel iGPU: frequency % via cat of sysfs rps files.
+// Intel iGPU: busy % from rc6 residency, frequency from sysfs rps files.
 // NVIDIA dGPU: nvidia-smi when envycontrol mode is not "integrated".
 //
 // Exposes:
+//   igpu.busyPercent  — 0–100 (time not spent in rc6 sleep)
 //   igpu.freqPercent  — 0–100 (act_freq / max_freq * 100)
 //   igpu.curMhz       — e.g. "650 MHz"
 //   igpu.maxMhz       — e.g. "1100 MHz"
@@ -47,6 +48,7 @@ QtObject {
 
     property QtObject igpu: QtObject {
         property real   freqPercent: 0.0
+        property real   busyPercent: 0.0
         property string curMhz:     "— MHz"
         property string maxMhz:     "— MHz"
     }
@@ -58,37 +60,36 @@ QtObject {
         property string totalVram:    "— MB"
     }
 
-    // ── Intel act freq ────────────────────────────────────────────────────────
-    property real _actMhz: 0
-    property real _maxMhz: 0
+    // ── Intel iGPU ────────────────────────────────────────────────────────────
+    // One read per tick: cur freq, max freq, rc6 residency (ms the GPU slept).
+    // cur (requested) instead of act: act reads 0 whenever the sample hits rc6.
+    // Busy % = share of wall time NOT spent in rc6 since the previous tick.
+    property real _actMhz:   0
+    property real _maxMhz:   0
+    property real _prevRc6:  -1
+    property real _prevTime: 0
 
-    property var _actProc: Process {
-        command: ["cat", "/sys/class/drm/card1/gt/gt0/rps_act_freq_mhz"]
+    property var _igpuProc: Process {
+        command: ["sh", "-c",
+            "d=$(ls -d /sys/class/drm/card*/gt/gt0 2>/dev/null | head -1); " +
+            "[ -n \"$d\" ] && cat $d/rps_cur_freq_mhz $d/rps_max_freq_mhz $d/rc6_residency_ms"]
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                var a = parseFloat(text.trim())
-                if (!isNaN(a)) {
-                    root._actMhz   = a
-                    root.igpu.curMhz = a + " MHz"
-                    if (root._maxMhz > 0)
-                        root.igpu.freqPercent = Math.round((a / root._maxMhz) * 100)
+                var v = text.trim().split("\n").map(parseFloat)
+                if (v.length < 3 || v.some(isNaN)) return
+                var now = Date.now()
+                root._actMhz     = v[0]
+                root._maxMhz     = v[1]
+                root.igpu.curMhz = v[0] + " MHz"
+                root.igpu.maxMhz = v[1] + " MHz"
+                if (v[1] > 0) root.igpu.freqPercent = Math.round(v[0] / v[1] * 100)
+                if (root._prevRc6 >= 0 && now > root._prevTime) {
+                    var idle = (v[2] - root._prevRc6) / (now - root._prevTime)
+                    root.igpu.busyPercent = Math.max(0, Math.min(100, Math.round((1 - idle) * 100)))
                 }
-            }
-        }
-    }
-
-    // ── Intel max freq ────────────────────────────────────────────────────────
-    property var _maxProc: Process {
-        command: ["cat", "/sys/class/drm/card1/gt/gt0/rps_max_freq_mhz"]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                var m = parseFloat(text.trim())
-                if (!isNaN(m)) {
-                    root._maxMhz     = m
-                    root.igpu.maxMhz = m + " MHz"
-                }
+                root._prevRc6  = v[2]
+                root._prevTime = now
             }
         }
     }
@@ -121,10 +122,8 @@ QtObject {
         running:  root.active
         repeat:   true
         onTriggered: {
-            _actProc.running = false
-            _actProc.running = true
-            _maxProc.running = false
-            _maxProc.running = true
+            _igpuProc.running = false
+            _igpuProc.running = true
         }
     }
 
@@ -149,8 +148,7 @@ QtObject {
     }
 
     Component.onCompleted: {
-        _actProc.running = true
-        _maxProc.running = true
+        _igpuProc.running = true
         if (envyMode !== "integrated" && root.hasNvidia)
             _nvProc.running = true
     }

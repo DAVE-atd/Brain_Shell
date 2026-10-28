@@ -3,6 +3,9 @@ NetService ./system/NetService.qml
 GpuService ./system/GpuService.qml
 EnvyControlService ./system/EnvyControlService.qml
 CpuService ./system/CpuService.qml
+BatteryService ./system/BatteryService.qml
+ProcService ./system/ProcService.qml
+PowerProfileService ./system/PowerProfileService.qml
 CpuFreqService ./system/CpuFreqService.qml
 DiskService ./system/DiskService.qml
 ThermalService ./system/ThermalService.qml
