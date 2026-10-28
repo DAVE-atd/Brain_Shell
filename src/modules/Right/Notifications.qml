@@ -22,7 +22,6 @@ import "../../"
 import "../../services/"
 
 IconBtn {
-    textColor: ShellState.dnd ? Qt.rgba(Theme.accentVivid.r, Theme.accentVivid.g, Theme.accentVivid.b, 0.55) : Theme.accentVivid
     text: ShellState.dnd
           ? "󰂛"
           : NotificationService.count > 0 ? "󰂚" : "󰂜"
