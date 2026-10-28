@@ -22,6 +22,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import "../"
 import "../components"
+import "../popups"
 import "../services"
 import Quickshell.Services.Pipewire
 
@@ -33,6 +34,13 @@ ShellRoot {
     property var _updater:  UpdateService
     property var _ipc:      IpcManager
     property var _migrator: MigrationService
+
+    // ── Wallpaper carousel (wallpaper-toggle IPC) ─────────────────────────────
+    WallpaperCarousel { id: wallpaperCarousel }
+    Connections {
+        target: IpcManager
+        function onWallpaperCarouselToggleRequested() { wallpaperCarousel.toggle() }
+    }
     
 
     Connections {

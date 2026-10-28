@@ -183,8 +183,20 @@ QtObject {
         }
     }
 
+    // Carousel lives in ShellHost (a singleton can't own windows), so ask it
+    signal wallpaperCarouselToggleRequested()
+
     property var wallpaper: IpcHandler {
         target: "wallpaper-toggle"
+        function toggle() {
+            if (Popups.anyOpen) SurfaceState.close();
+            root.wallpaperCarouselToggleRequested();
+        }
+    }
+
+    // Old popup: folder and color scheme settings
+    property var wallpaperPopup: IpcHandler {
+        target: "wallpaper-popup-toggle"
         function toggle() {
             if (Popups.wallpaperOpen) SurfaceState.close();
             else {
