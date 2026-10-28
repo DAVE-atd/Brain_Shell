@@ -1,15 +1,6 @@
 [config]
 # Mandatory config section for matugen
 
-# Fixed hues for the bar icons, blended toward the wallpaper colour
-[config.custom_colors]
-green = { color = "#4ade80", blend = true }
-blue = { color = "#60a5fa", blend = true }
-cyan = { color = "#22d3ee", blend = true }
-purple = { color = "#c084fc", blend = true }
-yellow = { color = "#facc15", blend = true }
-pink = { color = "#f472b6", blend = true }
-
 [templates.brain_shell]
 input_path = './brain-shell-colors.json.example'
 output_path = '~/.config/Brain_Shell/matugen/colors.json'

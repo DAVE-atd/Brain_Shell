@@ -39,12 +39,6 @@ QtObject {
     property color icon:       internalLoader.icon
     property color border:     internalLoader.border
     property color iconFont:   internalLoader.iconFont
-    property color green:    internalLoader.green
-    property color blue:     internalLoader.blue
-    property color cyan:     internalLoader.cyan
-    property color purple:   internalLoader.purple
-    property color yellow:   internalLoader.yellow
-    property color pink:     internalLoader.pink
     property color error:      PrefsService.darkMode ? "#f87171" : "#cc0000"
     property color errorSolid: "#d9534f"
     property color card:       PrefsService.darkMode ? Qt.rgba(1, 1, 1, 0.045) : Qt.rgba(0, 0, 0, 0.045)

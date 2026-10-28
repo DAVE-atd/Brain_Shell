@@ -107,13 +107,13 @@ Item {
 
     // ── Color ─────────────────────────────────────────────────────────────────
     readonly property color iconColor: {
-        if (full)      return Theme.iconBattery
-        if (charging)  return Theme.iconBattery
+        if (full)      return Theme.accentVivid
+        if (charging)  return Theme.accentVivid
         if (pct <= 5)  return "#ff4444"
         if (pct <= 10) return "#ff6b00"
         if (pct <= 20) return "#ffcc00"
         if (pct <= 30) return "#ff9900"
-        return Theme.iconBattery
+        return Theme.accentVivid
     }
 
     // ── Display ───────────────────────────────────────────────────────────────

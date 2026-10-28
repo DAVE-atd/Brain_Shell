@@ -54,7 +54,7 @@ Item {
         if (!_ethernet && _signal <= 0) return Qt.rgba(Theme.text.r,Theme.text.g,Theme.text.b,0.28)
         if (_connectivity === "none")   return Theme.error
         if (_limited)                   return "#f5c47a"
-        return Theme.iconWifi
+        return Theme.accentVivid
     }
 
     // VPN blink
@@ -108,7 +108,7 @@ Item {
             font.pixelSize: Math.round(14 * localScale)
             anchors.verticalCenter: parent.verticalCenter
             opacity:        root._vpnOpacity
-            color: ShellState.vpnActive ? Theme.iconVpn : (vpHov.hovered ? Theme.iconVpn : Qt.rgba(Theme.iconVpn.r, Theme.iconVpn.g, Theme.iconVpn.b, 0.70))
+            color: ShellState.vpnActive ? Theme.accentVivid : (vpHov.hovered ? Theme.accentVivid : Qt.rgba(Theme.accentVivid.r, Theme.accentVivid.g, Theme.accentVivid.b, 0.70))
             Behavior on color   { ColorAnimation  { duration: Anim.normal} }
             Behavior on opacity { NumberAnimation { duration: Anim.superFast} }
             HoverHandler {
@@ -130,7 +130,7 @@ Item {
             text:           "󰖂"
             font.pixelSize: Math.round(14 * localScale)
             anchors.verticalCenter: parent.verticalCenter
-            color: tsHov.hovered ? Qt.lighter(Theme.iconTailscale, 1.25) : Theme.iconTailscale
+            color: tsHov.hovered ? Qt.lighter(Theme.accentVivid, 1.25) : Theme.accentVivid
             Behavior on color { ColorAnimation { duration: Anim.normal} }
             HoverHandler {
                 id: tsHov
@@ -151,7 +151,7 @@ Item {
             text:           ShellState.btConnected ? "󰂱" : "󰂯"
             font.pixelSize: Math.round(14 * localScale)
             anchors.verticalCenter: parent.verticalCenter
-            color: btHov.hovered ? Qt.lighter(Theme.iconBluetooth, 1.25) : ShellState.btConnected ? Theme.iconBluetooth : Qt.rgba(Theme.iconBluetooth.r,Theme.iconBluetooth.g,Theme.iconBluetooth.b,0.55)
+            color: btHov.hovered ? Qt.lighter(Theme.accentVivid, 1.25) : ShellState.btConnected ? Theme.accentVivid : Qt.rgba(Theme.accentVivid.r,Theme.accentVivid.g,Theme.accentVivid.b,0.55)
             Behavior on color { ColorAnimation { duration: Anim.normal} }
             HoverHandler {
                 id: btHov
@@ -172,7 +172,7 @@ Item {
             text:           "󰀂"
             font.pixelSize: Math.round(14 * localScale)
             anchors.verticalCenter: parent.verticalCenter
-            color:          hotspotHov.hovered ? Qt.lighter(Theme.iconHotspot, 1.25) : Theme.iconHotspot
+            color:          hotspotHov.hovered ? Qt.lighter(Theme.accentVivid, 1.25) : Theme.accentVivid
             Behavior on color { ColorAnimation { duration: Anim.normal} }
             HoverHandler {
                 id: hotspotHov
