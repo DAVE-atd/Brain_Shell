@@ -39,6 +39,14 @@ QtObject {
     property color border:     "#ccc6b9"
     property color iconFont:   "#e6e2dd"
 
+    // Harmonised fixed hues (matugen custom_colors), for the bar icons
+    property color green:    "#4ade80"
+    property color blue:     "#60a5fa"
+    property color cyan:     "#22d3ee"
+    property color purple:   "#c084fc"
+    property color yellow:   "#facc15"
+    property color pink:     "#f472b6"
+
     // ── File watcher ──────────────────────────────────────────────────────────
     property var _file: FileView {
         id: colorsFile
@@ -83,6 +91,12 @@ QtObject {
             if (obj.subtext)    root.subtext    = obj.subtext
             if (obj.border)     root.border     = obj.border
             if (obj.iconFont)   root.iconFont   = obj.iconFont
+            if (obj.green) root.green = obj.green
+            if (obj.blue) root.blue = obj.blue
+            if (obj.cyan) root.cyan = obj.cyan
+            if (obj.purple) root.purple = obj.purple
+            if (obj.yellow) root.yellow = obj.yellow
+            if (obj.pink) root.pink = obj.pink
         } catch (e) {
             // Malformed JSON — keep fallback values
         }

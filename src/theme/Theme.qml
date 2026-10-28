@@ -29,8 +29,20 @@ QtObject {
     property color active:     Colors.active
     // Accent hue from matugen with the saturation pushed up (bar icons, tray, monitor rings);
     // pale wallpapers otherwise give an almost-white accent
-    readonly property color accentVivid: Qt.hsla(active.hslHue, Math.max(active.hslSaturation, 0.85),
-                                                 Math.min(Math.max(active.hslLightness, 0.62), 0.70), 1)
+    readonly property color accentVivid: vivid(active)
+    function vivid(c) {
+        return Qt.hsla(c.hslHue, Math.max(c.hslSaturation, 0.85), Math.min(Math.max(c.hslLightness, 0.62), 0.70), 1)
+    }
+
+    // One colour per bar icon: matugen custom_colors (fixed hue, blended toward the wallpaper)
+    readonly property color iconWifi:          vivid(Colors.cyan)
+    readonly property color iconVpn:           vivid(Colors.pink)
+    readonly property color iconTailscale:     vivid(Colors.pink)
+    readonly property color iconBluetooth:     vivid(Colors.blue)
+    readonly property color iconHotspot:       vivid(Colors.cyan)
+    readonly property color iconAudio:         vivid(Colors.purple)
+    readonly property color iconBattery:       vivid(Colors.green)
+    readonly property color iconNotifications: vivid(Colors.yellow)
     property color text:       Colors.text
     property color subtext:    Colors.subtext
     property color icon:       Colors.icon

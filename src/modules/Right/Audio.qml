@@ -59,7 +59,7 @@ Item {
         Text {
             id: iconText
             text:           root.icon
-            color:          root.sink?.ready && root.sink.audio.muted ? Theme.error : hov.hovered ? Qt.lighter(Theme.accentVivid, 1.25) : Theme.accentVivid
+            color:          root.sink?.ready && root.sink.audio.muted ? Theme.error : hov.hovered ? Qt.lighter(Theme.iconAudio, 1.25) : Theme.iconAudio
             font.pixelSize: Math.round(18 * localScale)
             anchors.verticalCenter: parent.verticalCenter
             Behavior on color { ColorAnimation { duration: Anim.color} }
@@ -77,7 +77,7 @@ Item {
             Text {
                 id: pctText
                 text:           root.pct + "%"
-                color:          hov.hovered ? Qt.lighter(Theme.accentVivid, 1.25) : Theme.accentVivid
+                color:          hov.hovered ? Qt.lighter(Theme.iconAudio, 1.25) : Theme.iconAudio
                 font.pixelSize: Math.round(12 * localScale)
                 anchors.verticalCenter: parent.verticalCenter
                 Behavior on color { ColorAnimation { duration: Anim.color} }
