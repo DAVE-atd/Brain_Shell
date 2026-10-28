@@ -147,6 +147,11 @@ QtObject {
         function toggle() { _openNetwork("vpn") }
     }
 
+    property var tailscaleToggle: IpcHandler {
+        target: "tailscale-toggle"
+        function toggle() { _openNetwork("tailscale") }
+    }
+
     property var hotspotToggle: IpcHandler {
         target: "hotspot-toggle"
         function toggle() { _openNetwork("hotspot") }

@@ -124,6 +124,29 @@ Item {
             }
         }
 
+        // Tailscale — opens to tailscale tab; accent while an exit node routes traffic
+        Text {
+            visible:        TailscaleService.running
+            text:           "󰖂"
+            font.pixelSize: Math.round(14 * localScale)
+            anchors.verticalCenter: parent.verticalCenter
+            color: TailscaleService.exitNode !== "" || tsHov.hovered
+                ? Theme.active
+                : Qt.rgba(Theme.text.r,Theme.text.g,Theme.text.b,0.70)
+            Behavior on color { ColorAnimation { duration: Anim.normal} }
+            HoverHandler {
+                id: tsHov
+                onHoveredChanged: {
+                    if (hovered && !Popups.networkPinned) Popups.networkPage = "tailscale"
+                }
+            }
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: IpcManager.tailscaleToggle.toggle()
+            }
+        }
+
         // Bluetooth — opens to bluetooth tab
         Text {
             visible:        ShellState.btPowered

@@ -86,6 +86,7 @@ Item {
                             { key: "wifi",      icon: "󰤨", label: "Wi-Fi"     },
                             { key: "bluetooth", icon: "󰂯", label: "Bluetooth" },
                             { key: "vpn",       icon: "󰦝", label: "VPN"       },
+                            { key: "tailscale", icon: "󰖂", label: "Tailnet"   },
                             { key: "hotspot",   icon: "󰀃", label: "Hotspot"   },
                         ]
                         onPageChanged: function(key) { Popups.networkPage = key }
@@ -98,7 +99,7 @@ Item {
                         width: parent.width
                         height: parent.height - tabBar.height
                         
-                        property int pageIdx: Math.max(0, ["wifi", "bluetooth", "vpn", "hotspot"].indexOf(root.page))
+                        property int pageIdx: Math.max(0, ["wifi", "bluetooth", "vpn", "tailscale", "hotspot"].indexOf(root.page))
                         property int oldIdx: pageIdx
                         property int newIdx: pageIdx
                         property real progress: 1.0
@@ -178,7 +179,8 @@ Item {
                         NetworkTab { myIdx: 0; sourceFile: "WifiTab.qml" }
                         NetworkTab { myIdx: 1; sourceFile: "BluetoothTab.qml" }
                         NetworkTab { myIdx: 2; sourceFile: "VPNTab.qml" }
-                        NetworkTab { myIdx: 3; sourceFile: "HotspotTab.qml" }
+                        NetworkTab { myIdx: 3; sourceFile: "TailscaleTab.qml" }
+                        NetworkTab { myIdx: 4; sourceFile: "HotspotTab.qml" }
                     }
             }
         }
