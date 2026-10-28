@@ -24,6 +24,7 @@ import "../"
 import "../components"
 import "../popups"
 import "../services"
+import "../lock"
 import Quickshell.Services.Pipewire
 
 // The new unified root for the morphing UI
@@ -34,6 +35,9 @@ ShellRoot {
     property var _updater:  UpdateService
     property var _ipc:      IpcManager
     property var _migrator: MigrationService
+
+    // ── Lock screen (lock-screen IPC; hypridle lock_cmd) ─────────────────────
+    LockScreen {}
 
     // ── Orbit Bluetooth background services (see popups/BluetoothTab.qml) ──────
     OrbitHost {}
