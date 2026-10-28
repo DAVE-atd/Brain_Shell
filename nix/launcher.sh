@@ -24,7 +24,12 @@ if [ "${BRAIN_SHELL_WALLPAPER_DAEMON:-awww}" = "awww" ]; then
 else
     pgrep -x "${BRAIN_SHELL_WALLPAPER_DAEMON}" >/dev/null || ${BRAIN_SHELL_WALLPAPER_DAEMON} &
 fi
-pgrep -x hypridle >/dev/null || hypridle &
+# hypridle only looks in ~/.config/hypr by default; use the shell's own config
+if [ -f "$BRAIN_SHELL_CONFIG_DIR/hypridle.conf" ]; then
+    pgrep -x hypridle >/dev/null || hypridle -c "$BRAIN_SHELL_CONFIG_DIR/hypridle.conf" &
+else
+    pgrep -x hypridle >/dev/null || hypridle &
+fi
 pgrep -f "cliphist store" >/dev/null || {
     wl-paste --type text --watch cliphist store &
     wl-paste --type image --watch cliphist store &
