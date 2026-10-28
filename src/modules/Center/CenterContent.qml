@@ -22,6 +22,7 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import "../../"
 import "../Right"
+import "../Left"
 
 // CenterContent — scrollable dynamic island carousel.
 //
@@ -169,6 +170,31 @@ Item {
 		}
 	}
 
+	// ── Workspace flash — dots replace the carousel briefly after a switch ────
+	property bool _wsFlash: false
+	property bool _wsReady: false
+	Component.onCompleted: Qt.callLater(() => root._wsReady = true)
+
+	function _flashWorkspaces() {
+		if (!root._wsReady) return
+		root._wsFlash = true
+		if (!wsHover.hovered) wsFlashTimer.restart()
+	}
+
+	Timer {
+		id: wsFlashTimer
+		interval: 1500
+		onTriggered: root._wsFlash = false
+	}
+
+	Connections {
+		target: Hyprland
+		function onFocusedWorkspaceChanged() { root._flashWorkspaces() }
+		function onRawEvent(event) {
+			if (event.name === "activespecial") root._flashWorkspaces()
+		}
+	}
+
 	// ── Scroll debounce ───────────────────────────────────────────────────────
 	property bool _scrollBusy: false
 	Timer {
@@ -235,8 +261,27 @@ Item {
 			}
 		}
 
+		Workspaces {
+			anchors.centerIn: parent
+			localScale: root.localScale
+			opacity: root._wsFlash ? 1 : 0
+			scale:   root._wsFlash ? 1 : 0.9
+			visible: opacity > 0
+			z: 2
+			Behavior on opacity { NumberAnimation { duration: Anim.normal } }
+			Behavior on scale   { NumberAnimation { duration: Anim.normal; easing.type: Anim.outCubic } }
+
+			// Dots stay while hovered (and are clickable)
+			HoverHandler {
+				id: wsHover
+				onHoveredChanged: if (hovered) wsFlashTimer.stop(); else if (root._wsFlash) wsFlashTimer.restart()
+			}
+		}
+
 		ListView {
 			id: statusList
+			opacity: root._wsFlash ? 0 : 1
+			Behavior on opacity { NumberAnimation { duration: Anim.normal } }
 			anchors.fill: parent
 			orientation:  ListView.Vertical
 			spacing:      Math.round(15 * localScale)
