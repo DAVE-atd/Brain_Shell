@@ -107,13 +107,13 @@ Item {
 
     // ── Color ─────────────────────────────────────────────────────────────────
     readonly property color iconColor: {
-        if (full)      return Theme.active
-        if (charging)  return Theme.active
+        if (full)      return Theme.accentVivid
+        if (charging)  return Theme.accentVivid
         if (pct <= 5)  return "#ff4444"
         if (pct <= 10) return "#ff6b00"
         if (pct <= 20) return "#ffcc00"
         if (pct <= 30) return "#ff9900"
-        return Theme.text
+        return Theme.accentVivid
     }
 
     // ── Display ───────────────────────────────────────────────────────────────
@@ -159,7 +159,7 @@ Item {
             Text {
                 id: pctText
                 text:           root.pct + "%"
-                color:          hov.hovered ? Theme.active : Theme.text
+                color:          root.iconColor
                 font.pixelSize: Math.round(12 * localScale)
                 anchors.verticalCenter: parent.verticalCenter
                 Behavior on color { ColorAnimation { duration: Anim.color} }

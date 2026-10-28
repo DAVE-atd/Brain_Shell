@@ -80,7 +80,7 @@ Rectangle {
         property string icon:  ""
         property string label: ""
         property color  tint
-        readonly property color _accent: tint === Theme.text ? Theme.active : tint
+        readonly property color _accent: tint === Theme.text ? Theme.accentVivid : tint
 
         width:  Math.round(22 * root.localScale)
         height: width

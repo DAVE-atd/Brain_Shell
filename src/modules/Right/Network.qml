@@ -54,7 +54,7 @@ Item {
         if (!_ethernet && _signal <= 0) return Qt.rgba(Theme.text.r,Theme.text.g,Theme.text.b,0.28)
         if (_connectivity === "none")   return Theme.error
         if (_limited)                   return "#f5c47a"
-        return hov.hovered ? Theme.active : Theme.text
+        return Theme.accentVivid
     }
 
     // VPN blink
@@ -84,7 +84,7 @@ Item {
         Text {
             id: netIcon
             text:           root._netIcon
-            color:          wifiHov.hovered ? Theme.active : root._netColor
+            color:          wifiHov.hovered ? Qt.lighter(root._netColor, 1.25) : root._netColor
             font.pixelSize: Math.round(16 * localScale)
             anchors.verticalCenter: parent.verticalCenter
             Behavior on color { ColorAnimation { duration: Anim.normal} }
@@ -108,7 +108,7 @@ Item {
             font.pixelSize: Math.round(14 * localScale)
             anchors.verticalCenter: parent.verticalCenter
             opacity:        root._vpnOpacity
-            color: ShellState.vpnActive ? Theme.active : (vpHov.hovered ? Theme.active : Qt.rgba(Theme.active.r, Theme.active.g, Theme.active.b, 0.70))
+            color: ShellState.vpnActive ? Theme.accentVivid : (vpHov.hovered ? Theme.accentVivid : Qt.rgba(Theme.accentVivid.r, Theme.accentVivid.g, Theme.accentVivid.b, 0.70))
             Behavior on color   { ColorAnimation  { duration: Anim.normal} }
             Behavior on opacity { NumberAnimation { duration: Anim.superFast} }
             HoverHandler {
@@ -130,9 +130,7 @@ Item {
             text:           "󰖂"
             font.pixelSize: Math.round(14 * localScale)
             anchors.verticalCenter: parent.verticalCenter
-            color: TailscaleService.exitNode !== "" || tsHov.hovered
-                ? Theme.active
-                : Qt.rgba(Theme.text.r,Theme.text.g,Theme.text.b,0.70)
+            color: tsHov.hovered ? Qt.lighter(Theme.accentVivid, 1.25) : Theme.accentVivid
             Behavior on color { ColorAnimation { duration: Anim.normal} }
             HoverHandler {
                 id: tsHov
@@ -153,7 +151,7 @@ Item {
             text:           ShellState.btConnected ? "󰂱" : "󰂯"
             font.pixelSize: Math.round(14 * localScale)
             anchors.verticalCenter: parent.verticalCenter
-            color: ShellState.btConnected ? (btHov.hovered ? Theme.active : Theme.text) : Qt.rgba(Theme.text.r,Theme.text.g,Theme.text.b,0.32)
+            color: btHov.hovered ? Qt.lighter(Theme.accentVivid, 1.25) : ShellState.btConnected ? Theme.accentVivid : Qt.rgba(Theme.accentVivid.r,Theme.accentVivid.g,Theme.accentVivid.b,0.55)
             Behavior on color { ColorAnimation { duration: Anim.normal} }
             HoverHandler {
                 id: btHov
@@ -174,7 +172,7 @@ Item {
             text:           "󰀂"
             font.pixelSize: Math.round(14 * localScale)
             anchors.verticalCenter: parent.verticalCenter
-            color:          hotspotHov.hovered ? Theme.active : Theme.text
+            color:          hotspotHov.hovered ? Qt.lighter(Theme.accentVivid, 1.25) : Theme.accentVivid
             Behavior on color { ColorAnimation { duration: Anim.normal} }
             HoverHandler {
                 id: hotspotHov

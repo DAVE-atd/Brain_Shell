@@ -171,7 +171,7 @@ RowLayout {
                 anchors.fill: trayIcon
                 source: trayIcon
                 colorization: trayHover.hovered || isMenuOpen ? 0 : 1
-                colorizationColor: Theme.active
+                colorizationColor: Theme.accentVivid
                 brightness: trayHover.hovered || isMenuOpen ? 0 : 0.15
                 Behavior on colorization { NumberAnimation { duration: Anim.normal } }
             }

@@ -27,6 +27,10 @@ QtObject {
     // Colors
     property color background: Colors.background
     property color active:     Colors.active
+    // Accent hue from matugen with the saturation pushed up (bar icons, tray, monitor rings);
+    // pale wallpapers otherwise give an almost-white accent
+    readonly property color accentVivid: Qt.hsla(active.hslHue, Math.max(active.hslSaturation, 0.85),
+                                                 Math.min(Math.max(active.hslLightness, 0.62), 0.70), 1)
     property color text:       Colors.text
     property color subtext:    Colors.subtext
     property color icon:       Colors.icon
