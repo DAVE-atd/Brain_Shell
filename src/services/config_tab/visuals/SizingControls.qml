@@ -36,6 +36,18 @@ Item {
 
         SettingsSlider {
             localScale: root.localScale
+            text: "Bar Height"
+            description: "Height of the top bar (and the notches)."
+            from: 32; to: 56; stepSize: 2; value: PrefsService.barHeight
+            defaultValue: 40
+            onValueChanged: { if (value !== PrefsService.barHeight) { PrefsService.barHeight = value; PrefsService.saveConfig() } }
+            valueSuffix: "px"
+        }
+
+        SettingsDivider { localScale: root.localScale }
+
+        SettingsSlider {
+            localScale: root.localScale
             text: "Border Width"
             description: "Thickness of panel borders."
             from: 0; to: 10; stepSize: 1; value: PrefsService.borderWidth

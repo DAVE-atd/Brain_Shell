@@ -118,19 +118,31 @@ Item {
             NumberAnimation { target: dots; property: "x"; to:   0; duration: 50 }
         }
 
+        // Fixed pool of slots: a slot grows/shrinks in width, so adding or deleting a
+        // character glides (the row stays centred and slides instead of jumping)
         Row {
             id: dots
-            spacing: 12
             anchors.verticalCenter: parent.verticalCenter
             Repeater {
-                model: Math.min(root.ctx.password.length, 32)
-                delegate: Rectangle {
-                    width: 11; height: 11; radius: 5.5
-                    color: dotsBox.failed ? "#f87171" : root.fg
-                    opacity: root.ctx.busy ? pulse.value : 1
-                    scale: 0
-                    Component.onCompleted: scale = 1
-                    Behavior on scale { NumberAnimation { duration: 160; easing.type: Easing.OutBack } }
+                model: 32
+                delegate: Item {
+                    id: slot
+                    required property int index
+                    readonly property bool shown: index < root.ctx.password.length
+                    width: shown ? 23 : 0
+                    height: 14
+                    Behavior on width { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
+
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: 11; height: 11; radius: 5.5
+                        color: dotsBox.failed ? "#f87171" : root.fg
+                        Behavior on color { ColorAnimation { duration: 180 } }
+                        opacity: slot.shown ? (root.ctx.busy ? pulse.value : 1) : 0
+                        scale: slot.shown ? 1 : 0.2
+                        Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
+                        Behavior on scale   { NumberAnimation { duration: 260; easing.type: Easing.OutBack; easing.overshoot: 1.6 } }
+                    }
                 }
             }
         }

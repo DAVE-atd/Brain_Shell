@@ -27,7 +27,7 @@ QtObject {
     // -- Bar Sizes --
     property int borderWidth:   PrefsService.borderWidth
     property int cornerRadius:  PrefsService.cornerRadius
-    property int notchHeight:   40
+    property int notchHeight:   PrefsService.barHeight
         
     // -- Notch Content Padding --
     // Space added around the content inside each notch

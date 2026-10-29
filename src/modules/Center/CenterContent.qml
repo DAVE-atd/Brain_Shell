@@ -173,7 +173,8 @@ Item {
 	// ── Workspace flash — dots replace the carousel briefly after a switch ────
 	property bool _wsFlash: false
 	property bool _wsReady: false
-	Component.onCompleted: Qt.callLater(() => root._wsReady = true)
+	// Hyprland reports the focused workspace shortly after start; don't flash for that
+	Timer { interval: 2000; running: true; onTriggered: root._wsReady = true }
 
 	function _flashWorkspaces() {
 		if (!root._wsReady) return

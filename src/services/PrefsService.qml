@@ -61,6 +61,7 @@ QtObject {
     property bool barEnabled: true
     property int borderWidth: 6
     property int cornerRadius: 17
+    property int barHeight: 40
 
     // Popup Behavior
     property bool globalHoverMode: true
@@ -144,6 +145,7 @@ QtObject {
             if (o.barEnabled !== undefined) root.barEnabled = o.barEnabled
             if (o.borderWidth !== undefined) root.borderWidth = o.borderWidth
             if (o.cornerRadius !== undefined) root.cornerRadius = o.cornerRadius
+            if (o.barHeight !== undefined) root.barHeight = o.barHeight
 
             if (o.globalHoverMode !== undefined) root.globalHoverMode = o.globalHoverMode
             if (o.hoverDashboard !== undefined) root.hoverDashboard = o.hoverDashboard
@@ -253,6 +255,7 @@ QtObject {
             barEnabled: root.barEnabled,
             borderWidth: root.borderWidth,
             cornerRadius: root.cornerRadius,
+            barHeight: root.barHeight,
             globalHoverMode: root.globalHoverMode,
             hoverDashboard: root.hoverDashboard,
             hoverNetwork: root.hoverNetwork,

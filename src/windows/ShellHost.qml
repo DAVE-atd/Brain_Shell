@@ -121,7 +121,7 @@ ShellRoot {
                 StrutWindow { 
                     screen: modelData; 
                     edge: "top"; 
-                    reserveSpace: ShellState.focusMode ? Math.round(Theme.borderWidth * localScale) * 2 : Math.round(40 * localScale) + Math.round(Theme.borderWidth * localScale) * 2 
+                    reserveSpace: ShellState.focusMode ? Math.round(Theme.borderWidth * localScale) * 2 : Math.round(Theme.notchHeight * localScale) + Math.round(Theme.borderWidth * localScale) * 2 
                     Behavior on reserveSpace { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve; easing.overshoot: Anim.globalOvershoot; easing.amplitude: Anim.globalAmplitude; easing.period: Anim.globalPeriod } }
                 }
                 StrutWindow { screen: modelData; edge: "bottom"; reserveSpace: Math.round(Theme.borderWidth * localScale) * 2 }

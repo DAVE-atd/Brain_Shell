@@ -276,6 +276,14 @@ PanelWindow {
         }
     }
 
+    PopupBacking {
+        target: centerNotchArea
+        shown: SurfaceState.isTopExpanded
+        edgeExtend: Math.round(Theme.borderWidth * root.localScale)
+        edgeTop: true
+        bottomLeftRadius: surfaceShape.innerRadius; bottomRightRadius: surfaceShape.innerRadius
+    }
+
     Item {
         id: centerNotchArea
         HoverHandler { id: centerNotchHover }
@@ -331,6 +339,14 @@ PanelWindow {
     }
     }
 
+
+    PopupBacking {
+        target: rightNotchArea
+        shown: SurfaceState.isRightExpanded || Popups.notificationToastOpen
+        edgeExtend: Math.round(Theme.borderWidth * root.localScale)
+        edgeTop: true; edgeRight: true
+        bottomLeftRadius: surfaceShape.innerRadius
+    }
 
     Item {
         id: rightNotchArea
@@ -438,6 +454,14 @@ PanelWindow {
         }
     }
 
+    PopupBacking {
+        target: leftCenterNotchArea
+        shown: SurfaceState.isLeftCenterExpanded
+        edgeExtend: Math.round(Theme.borderWidth * root.localScale)
+        edgeLeft: true
+        topRightRadius: surfaceShape.innerRadius; bottomRightRadius: surfaceShape.innerRadius
+    }
+
     Item {
         id: leftCenterNotchArea
         HoverHandler { id: leftCenterNotchHover }
@@ -457,6 +481,14 @@ PanelWindow {
 
             Behavior on opacity { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve; easing.overshoot: Anim.globalOvershoot; easing.amplitude: Anim.globalAmplitude; easing.period: Anim.globalPeriod } }
         }
+    }
+
+    PopupBacking {
+        target: rightCenterNotchArea
+        shown: SurfaceState.isRightCenterExpanded
+        edgeExtend: Math.round(Theme.borderWidth * root.localScale)
+        edgeRight: true
+        topLeftRadius: surfaceShape.innerRadius; bottomLeftRadius: surfaceShape.innerRadius
     }
 
     Item {
@@ -480,6 +512,14 @@ PanelWindow {
         }
     }
 
+    PopupBacking {
+        target: bottomCenterNotchArea
+        shown: SurfaceState.isBottomCenterExpanded
+        edgeExtend: Math.round(Theme.borderWidth * root.localScale)
+        edgeBottom: true
+        topLeftRadius: surfaceShape.innerRadius; topRightRadius: surfaceShape.innerRadius
+    }
+
     Item {
         id: bottomCenterNotchArea
         HoverHandler { id: bottomCenterNotchHover }
@@ -499,6 +539,14 @@ PanelWindow {
 
             Behavior on opacity { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve; easing.overshoot: Anim.globalOvershoot; easing.amplitude: Anim.globalAmplitude; easing.period: Anim.globalPeriod } }
         }
+    }
+
+    PopupBacking {
+        target: bottomRightNotchArea
+        shown: SurfaceState.isBottomRightExpanded
+        edgeExtend: Math.round(Theme.borderWidth * root.localScale)
+        edgeBottom: true; edgeRight: true
+        topLeftRadius: surfaceShape.innerRadius
     }
 
     Item {
