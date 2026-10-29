@@ -128,25 +128,31 @@ StatCard {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  Caffeine  (systemd-inhibit)
+    //  Caffeine  (systemd-inhibit in its own transient user unit, so it
+    //  survives shell restarts, e.g. a nixswitch restarting brain-shell.service)
     // ─────────────────────────────────────────────────────────────────────────
     property bool caffeineOn: false
 
     Process { id: caffeineCheck
-        command: ["bash", "-c", "pgrep -f 'systemd-inhibit.*Caffeine'"]; running: false
-        stdout: SplitParser { onRead: function(l) { if (l.trim() !== "") root.caffeineOn = true } } }
+        command: ["systemctl", "--user", "is-active", "--quiet", "brain-shell-caffeine"]; running: false
+        onExited: function(code) { root.caffeineOn = code === 0 } }
     Process { id: caffeineProc
-        command: ["systemd-inhibit","--what=idle:sleep",
-                  "--who=Brain Shell","--why=Caffeine mode","sleep","infinity"]
-        running: false }
+        command: ["systemd-run", "--user", "--unit=brain-shell-caffeine", "--collect", "--quiet",
+                  "systemd-inhibit", "--what=idle:sleep",
+                  "--who=Brain Shell", "--why=Caffeine mode", "sleep", "infinity"]
+        running: false
+        onExited: caffeineCheck.running = true }
     Process { id: caffeineKill
-        command: ["bash", "-c", "pkill -f 'systemd-inhibit.*Caffeine'"]; running: false
-        onRunningChanged: if (!running) root.caffeineOn = false }
+        command: ["systemctl", "--user", "stop", "brain-shell-caffeine"]; running: false
+        onExited: caffeineCheck.running = true }
     function _caffeineToggle() {
         if (root.caffeineOn) {
-            caffeineProc.running = false
+            root.caffeineOn = false
             caffeineKill.running = false; caffeineKill.running = true
-        } else { caffeineProc.running = true; root.caffeineOn = true }
+        } else {
+            root.caffeineOn = true
+            caffeineProc.running = false; caffeineProc.running = true
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
