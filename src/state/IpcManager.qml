@@ -72,7 +72,7 @@ QtObject {
 
     property var dashboardLauncher: IpcHandler {
         target: "dashboard-launcher"
-        function toggle() { _openDashboard("launcher") }
+        function toggle() { _openDashboard("display") }
     }
 
     property var dashboardConfig: IpcHandler {

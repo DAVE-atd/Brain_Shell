@@ -103,7 +103,7 @@ Item {
                     text: "Default Dashboard Tab"
                     description: "Initial view opened when launching the dashboard."
                     inputType: "options"
-                    options: ["Home", "System", "Tasks", "Apps", "Config"]
+                    options: ["Home", "System", "Tasks", "Display", "Config"]
                     selectedOption: PrefsService.defaultDashboardTab
                     buttonText: selectedOption
                     onOptionSelected: function(opt) {

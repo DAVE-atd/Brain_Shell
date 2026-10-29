@@ -55,7 +55,7 @@ QtObject {
             let opt = PrefsService.defaultDashboardTab
             if (opt === "System") dashboardPage = "stats"
             else if (opt === "Tasks") dashboardPage = "kanban"
-            else if (opt === "Apps") dashboardPage = "launcher"
+            else if (opt === "Apps" || opt === "Display") dashboardPage = "display"
             else if (opt === "Config") dashboardPage = "config"
             else dashboardPage = "home"
         }

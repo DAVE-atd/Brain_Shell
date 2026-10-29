@@ -34,7 +34,7 @@ import "../"
 Item {
     id: root
     Keys.onEscapePressed: if (!Popups.colorPickerActive) SurfaceState.close()
-    onOpacityChanged: { if (opacity === 1 && Popups.dashboardPage !== "launcher") forceActiveFocus() }
+    onOpacityChanged: { if (opacity === 1 && Popups.dashboardPage !== "display") forceActiveFocus() }
 
     property var screen
 
@@ -52,7 +52,7 @@ Item {
         "home":     900,
         "stats":    900,
         "kanban":   900,
-        "launcher": 560,
+        "display":  900,
         "config":   900
     })
 
@@ -123,7 +123,7 @@ Item {
                         { key: "home",     icon: "󰋜", label: "Home"   },
                         { key: "stats",    icon: "󰻠", label: "System" },
                         { key: "kanban",   icon: "󰄬", label: "Tasks"  },
-                        { key: "launcher", icon: "󱓞", label: "Apps"   },
+                        { key: "display",  icon: "󰍹", label: "Display" },
                         { key: "config",   icon: "󰒓", label: "Config" },
                     ]
                     onPageChanged: function(key) { Popups.dashboardPage = key }
@@ -138,7 +138,7 @@ Item {
                     width:  parent.width
                     height: parent.height - tabBar.height
                     
-                    property int pageIdx: Math.max(0, ["home", "stats", "kanban", "launcher", "config"].indexOf(root.page))
+                    property int pageIdx: Math.max(0, ["home", "stats", "kanban", "display", "config"].indexOf(root.page))
                     
                     property int oldIdx: pageIdx
                     property int newIdx: pageIdx
@@ -237,8 +237,8 @@ Item {
 
                     SlidePage {
                         myIdx: 3
-                        AppLauncher { 
-                            anchors.fill: parent 
+                        DisplayTab {
+                            anchors.fill: parent
                             localScale:   root.localScale
                         }
                     }
