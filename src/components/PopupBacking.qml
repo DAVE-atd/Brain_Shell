@@ -20,29 +20,27 @@ import QtQuick
 import "../"
 
 // PopupBacking — opaque fill behind an expanded popup notch.
-// The surface shape uses Theme.background (with the user's bar opacity); while a
-// popup is open this layer sits behind it so only the bar itself is see-through.
-// Anchor it to a notch area; the edge* flags extends it over the screen-edge border strip.
+// The surface shape uses Theme.background (with the user's bar opacity). While a
+// popup is open this region is drawn opaque on top of it. It is grown by `pad`
+// so it also covers the curved flares where the popup joins the bar / screen
+// edge; DynamicSurface clips it to the surface shape, so nothing spills out.
+//
+// Only opacity changes (no `visible` toggling): the layer it is rendered into
+// stops updating if its content starts out invisible.
 
 Rectangle {
     id: root
 
     required property Item target
     property bool shown: false
-    property real edgeExtend: 0
-    // which screen edges the notch touches
-    property bool edgeTop: false
-    property bool edgeBottom: false
-    property bool edgeLeft: false
-    property bool edgeRight: false
+    property real pad: 0
 
-    x: target.x - (edgeLeft ? edgeExtend : 0)
-    y: target.y - (edgeTop ? edgeExtend : 0)
-    width:  target.width  + (edgeLeft ? edgeExtend : 0) + (edgeRight ? edgeExtend : 0)
-    height: target.height + (edgeTop ? edgeExtend : 0) + (edgeBottom ? edgeExtend : 0)
+    x: target.x - pad
+    y: target.y - pad
+    width:  target.width  + pad * 2
+    height: target.height + pad * 2
 
     color: Qt.rgba(Theme.background.r, Theme.background.g, Theme.background.b, 1)
-    opacity: shown && PrefsService.bgOpacity < 1 ? 1 : 0
-    visible: opacity > 0
+    opacity: shown ? 1 : 0
     Behavior on opacity { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve } }
 }
