@@ -48,6 +48,18 @@ Item {
 
         SettingsSlider {
             localScale: root.localScale
+            text: "Window Gap"
+            description: "Space between windows and the bar / screen edges."
+            from: 0; to: 30; stepSize: 1; value: PrefsService.windowGap
+            defaultValue: 6
+            onValueChanged: { if (value !== PrefsService.windowGap) { PrefsService.windowGap = value; PrefsService.saveConfig() } }
+            valueSuffix: "px"
+        }
+
+        SettingsDivider { localScale: root.localScale }
+
+        SettingsSlider {
+            localScale: root.localScale
             text: "Border Width"
             description: "Thickness of panel borders."
             from: 0; to: 10; stepSize: 1; value: PrefsService.borderWidth

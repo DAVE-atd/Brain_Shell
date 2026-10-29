@@ -114,19 +114,21 @@ ShellRoot {
                 required property var modelData
                 readonly property var screen: modelData
                 readonly property real localScale: Math.max(0.75, Math.min(1.5, (screen ? screen.height : 1080.0) / 1080.0))
+                readonly property int edgeReserve: Math.round((Theme.borderWidth + PrefsService.windowGap) * localScale)
                 
                 // --- EXCLUSIVE ZONE STRUTS ---
+                // frame border + the user's gap between windows and the bar / screen edges
                 // Using phantom windows to seamlessly push active Hyprland windows inward
                 // without requiring the user to manually edit hyprland.conf gaps.
                 StrutWindow { 
                     screen: modelData; 
                     edge: "top"; 
-                    reserveSpace: ShellState.focusMode ? Math.round(Theme.borderWidth * localScale) * 2 : Math.round(Theme.notchHeight * localScale) + Math.round(Theme.borderWidth * localScale) * 2 
+                    reserveSpace: (ShellState.focusMode ? 0 : Math.round(Theme.notchHeight * localScale)) + edgeReserve
                     Behavior on reserveSpace { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve; easing.overshoot: Anim.globalOvershoot; easing.amplitude: Anim.globalAmplitude; easing.period: Anim.globalPeriod } }
                 }
-                StrutWindow { screen: modelData; edge: "bottom"; reserveSpace: Math.round(Theme.borderWidth * localScale) * 2 }
-                StrutWindow { screen: modelData; edge: "left"; reserveSpace: Math.round(Theme.borderWidth * localScale) * 2 }
-                StrutWindow { screen: modelData; edge: "right"; reserveSpace: Math.round(Theme.borderWidth * localScale) * 2 }
+                StrutWindow { screen: modelData; edge: "bottom"; reserveSpace: edgeReserve }
+                StrutWindow { screen: modelData; edge: "left"; reserveSpace: edgeReserve }
+                StrutWindow { screen: modelData; edge: "right"; reserveSpace: edgeReserve }
                 
                 // The morphing unified screen frame
                 DynamicSurface {

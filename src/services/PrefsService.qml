@@ -62,6 +62,7 @@ QtObject {
     property int borderWidth: 6
     property int cornerRadius: 17
     property int barHeight: 40
+    property int windowGap: 6     // space between windows and the bar / screen edges
 
     // Popup Behavior
     property bool globalHoverMode: true
@@ -146,6 +147,7 @@ QtObject {
             if (o.borderWidth !== undefined) root.borderWidth = o.borderWidth
             if (o.cornerRadius !== undefined) root.cornerRadius = o.cornerRadius
             if (o.barHeight !== undefined) root.barHeight = o.barHeight
+            if (o.windowGap !== undefined) root.windowGap = o.windowGap
 
             if (o.globalHoverMode !== undefined) root.globalHoverMode = o.globalHoverMode
             if (o.hoverDashboard !== undefined) root.hoverDashboard = o.hoverDashboard
@@ -256,6 +258,7 @@ QtObject {
             borderWidth: root.borderWidth,
             cornerRadius: root.cornerRadius,
             barHeight: root.barHeight,
+            windowGap: root.windowGap,
             globalHoverMode: root.globalHoverMode,
             hoverDashboard: root.hoverDashboard,
             hoverNetwork: root.hoverNetwork,
