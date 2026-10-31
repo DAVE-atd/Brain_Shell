@@ -345,7 +345,7 @@ Item {
                        : Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, swHov.hovered ? 0.15 : 0.1)
         border.color: checked ? Qt.darker(Theme.active, 1.2) : Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.2)
         border.width: 1
-        opacity: cs.busy ? 0.6 : 1
+        opacity: cs.busy ? 0.75 : 1
         Behavior on color { ColorAnimation { duration: Anim.fast } }
         Rectangle {
             width: root.s(18); height: width; radius: width / 2
@@ -355,6 +355,6 @@ Item {
             Behavior on x { NumberAnimation { duration: Anim.fast; easing.type: Easing.OutBack } }
         }
         HoverHandler { id: swHov; cursorShape: Qt.PointingHandCursor }
-        MouseArea { anchors.fill: parent; enabled: !cs.busy; onClicked: sw.toggled() }
+        MouseArea { anchors.fill: parent; onClicked: sw.toggled() }
     }
 }

@@ -61,8 +61,11 @@ QtObject {
 
     function refresh() { if (!_statusProc.running) _statusProc.running = true }
 
+    // Clicked again while switching: remembered and applied once the running switch is done
+    property var _pending: null
+
     function setEnabled(on) {
-        if (busy) return
+        if (busy) { _pending = on; enabled = on; return }
         busy = true
         enabled = on
         // One unit per systemctl call: with several units systemd doesn't pass the unit name
@@ -149,6 +152,12 @@ QtObject {
     property Process _toggleProc: Process {
         onExited: (code) => {
             root.busy = false
+            if (root._pending !== null) {
+                var next = root._pending
+                root._pending = null
+                root.setEnabled(next)
+                return
+            }
             if (code !== 0)
                 Quickshell.execDetached(["notify-send", "-a", "ClamAV", "ClamAV",
                                          "Could not switch real-time protection " + (root.enabled ? "on" : "off")])
