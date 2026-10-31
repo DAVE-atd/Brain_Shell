@@ -261,7 +261,8 @@ RowLayout {
 
             Process {
                 id: focusProc
-                command: ["sh", "-c", "sleep 0.15 && hyprctl dispatch focusurgentorlast"]
+                command: ["sh", "-c", "sleep 0.15 && hyprctl dispatch " + (ShellState.configProvider === "lua"
+                    ? "'hl.dsp.focus({ urgent_or_last = true })'" : "focusurgentorlast")]
             }
 
             TapHandler {

@@ -66,6 +66,7 @@ copy_template "$INSTALL_DIR/src/config/hyprlock.conf" "$CONFIG_DIR/hyprlock.conf
 copy_template "$INSTALL_DIR/src/config/matugen.toml"  "$CONFIG_DIR/matugen.toml"
 copy_template "$INSTALL_DIR/src/config/brain-shell-colors.json.example" "$CONFIG_DIR/brain-shell-colors.json.example"
 copy_template "$INSTALL_DIR/src/config/colors.conf.template" "$CONFIG_DIR/colors.conf.template"
+copy_template "$INSTALL_DIR/src/config/colors.lua.template" "$CONFIG_DIR/colors.lua.template"
 copy_template "$INSTALL_DIR/src/config/autostart/BrainShell-hyprland.conf" "$CONFIG_DIR/BrainShell-hyprland.conf"
 copy_template "$INSTALL_DIR/src/config/autostart/BrainShell-hyprland.lua"  "$CONFIG_DIR/BrainShell-hyprland.lua"
 

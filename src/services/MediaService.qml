@@ -20,6 +20,7 @@ pragma Singleton
 import QtQuick
 import Quickshell.Io
 import Quickshell.Services.Mpris
+import "../"
 
 // Unified MPRIS media player manager.
 // Single source of truth for active player across CenterContent,
@@ -228,7 +229,9 @@ QtObject {
 
     // ── Focus redirect: bring player's window to front ───────────────────────
     property var _focusProc: Process {
-        command: ["hyprctl", "dispatch", "focusurgentorlast", ""]
+        command: ShellState.configProvider === "lua"
+            ? ["hyprctl", "dispatch", "hl.dsp.focus({ urgent_or_last = true })"]
+            : ["hyprctl", "dispatch", "focusurgentorlast", ""]
         running: false
     }
 

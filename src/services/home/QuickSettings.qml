@@ -211,27 +211,30 @@ StatCard {
 
     Process { id: readGapsIn
         command: ["bash", "-c",
-            "hyprctl getoption general:gaps_in -j | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get('int',5))\""]
+            "hyprctl getoption general:gaps_in -j | python3 -c \"import sys,json; d=json.load(sys.stdin); v=d.get('int', d.get('custom', d.get('css', 5))); print(str(v).split()[0])\""]
         running: false
         stdout: SplitParser { onRead: function(l) { var v=parseInt(l.trim()); if(!isNaN(v)) root._savedGapsIn=v } }
         onRunningChanged: if (!running) readGapsOut.running = true }
     Process { id: readGapsOut
         command: ["bash", "-c",
-            "hyprctl getoption general:gaps_out -j | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get('int',10))\""]
+            "hyprctl getoption general:gaps_out -j | python3 -c \"import sys,json; d=json.load(sys.stdin); v=d.get('int', d.get('custom', d.get('css', 10))); print(str(v).split()[0])\""]
         running: false
         stdout: SplitParser { onRead: function(l) { var v=parseInt(l.trim()); if(!isNaN(v)) root._savedGapsOut=v } }
         onRunningChanged: if (!running) applyFocusGaps.running = true }
+    // Lua config: `keyword` is gone, options are set with hl.config via eval
+    function _gapsCmd(gin, gout) {
+        return ShellState.configProvider === "lua"
+            ? ["hyprctl", "eval", "hl.config({ general = { gaps_in = " + gin + ", gaps_out = " + gout + " } })"]
+            : ["bash", "-c", "hyprctl keyword general:gaps_in " + gin + " && hyprctl keyword general:gaps_out " + gout]
+    }
     Process { id: applyFocusGaps
-        command: ["bash", "-c",
-            "hyprctl keyword general:gaps_in 0 && hyprctl keyword general:gaps_out 10"]
+        command: root._gapsCmd(0, 10)
         running: false; onRunningChanged: if (!running) ShellState.focusMode = true }
     Process { id: restoreGaps; command: []; running: false
         onRunningChanged: if (!running) ShellState.focusMode = false }
     function _focusToggle() {
         if (ShellState.focusMode) {
-            restoreGaps.command = ["bash", "-c",
-                "hyprctl keyword general:gaps_in "  + root._savedGapsIn  +
-                " && hyprctl keyword general:gaps_out " + root._savedGapsOut]
+            restoreGaps.command = root._gapsCmd(root._savedGapsIn, root._savedGapsOut)
             restoreGaps.running = false; restoreGaps.running = true
         } else { readGapsIn.running = false; readGapsIn.running = true }
     }

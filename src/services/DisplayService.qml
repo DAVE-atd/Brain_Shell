@@ -26,10 +26,11 @@ import "../"
 // DisplayService — monitor configuration for the dashboard Display tab.
 //
 // Reads `hyprctl monitors all -j` (refreshed on monitor hotplug / config reload).
-// apply() sets the new layout live with `hyprctl keyword monitor …`, then waits
-// for confirm(): without it the previous layout is restored after 10 s.
-// Confirmed layouts are written to ~/.config/Brain_Shell/monitors.conf, which
-// hyprland.conf sources after its own monitor lines.
+// apply() sets the new layout live (Lua config: `hyprctl eval 'hl.monitor({…})'`,
+// hyprlang: `hyprctl keyword monitor …`), then waits for confirm(): without it the
+// previous layout is restored after 10 s.
+// Confirmed layouts are written to ~/.config/Brain_Shell/monitors.lua (or monitors.conf),
+// which the Hyprland config loads after its own monitor lines.
 
 QtObject {
     id: root
@@ -41,10 +42,11 @@ QtObject {
 
     property bool   awaitingConfirm: false
     property int    revertIn: 0
-    property var    _prevLines: []
-    property var    _newLines: []
+    property var    _prevCfgs: []
+    property var    _newCfgs: []
 
-    readonly property string confPath: Quickshell.env("HOME") + "/.config/Brain_Shell/monitors.conf"
+    readonly property bool   isLua: ShellState.configProvider === "lua"
+    readonly property string confPath: Quickshell.env("HOME") + "/.config/Brain_Shell/monitors." + (isLua ? "lua" : "conf")
 
     function refresh() { if (!_query.running) _query.running = true }
 
@@ -64,10 +66,20 @@ QtObject {
     function fmtRate(r) { return Math.abs(r - Math.round(r)) < 0.05 ? String(Math.round(r)) : r.toFixed(2) }
 
     // cfg: { name, width, height, refresh, scale, x, y, disabled, mirrorOf }
+    // hyprlang: "eDP-1,1920x1080@60.00,0x0,1"; Lua: hl.monitor({ output = "eDP-1", … })
     function lineFor(cfg) {
-        if (cfg.disabled) return cfg.name + ",disable"
         var mode = cfg.width + "x" + cfg.height + "@" + cfg.refresh.toFixed(2)
         var pos  = cfg.mirrorOf ? "auto" : (Math.round(cfg.x) + "x" + Math.round(cfg.y))
+        if (isLua) {
+            var f = ["output = " + JSON.stringify(cfg.name)]
+            if (cfg.disabled) f.push("disabled = true")
+            else {
+                f.push("mode = \"" + mode + "\"", "position = \"" + pos + "\"", "scale = " + cfg.scale)
+                if (cfg.mirrorOf) f.push("mirror = " + JSON.stringify(cfg.mirrorOf))
+            }
+            return "hl.monitor({ " + f.join(", ") + " })"
+        }
+        if (cfg.disabled) return cfg.name + ",disable"
         var l = cfg.name + "," + mode + "," + pos + "," + cfg.scale
         if (cfg.mirrorOf) l += ",mirror," + cfg.mirrorOf
         return l
@@ -75,9 +87,9 @@ QtObject {
 
     // Apply a full layout (one cfg per monitor) live; needs confirm() within 10 s
     function apply(cfgs) {
-        if (!awaitingConfirm) _prevLines = monitors.map(m => lineFor(m))
-        _newLines = cfgs.map(c => lineFor(c))
-        _run(_newLines)
+        if (!awaitingConfirm) _prevCfgs = monitors.slice()
+        _newCfgs = cfgs
+        _run(_newCfgs)
         awaitingConfirm = true
         revertIn = 10
         _revertTimer.restart()
@@ -86,8 +98,12 @@ QtObject {
     function confirm() {
         _revertTimer.stop()
         awaitingConfirm = false
-        var body = "# Written by Brain_Shell (dashboard → Display). Sourced after hypr/monitors.conf.\n"
-                 + _newLines.map(l => "monitor = " + l).join("\n") + "\n"
+        var lines = _newCfgs.map(c => lineFor(c))
+        var body = isLua
+            ? "-- Written by Brain_Shell (dashboard → Display). Loaded after the other monitor lines.\n"
+              + lines.join("\n") + "\n"
+            : "# Written by Brain_Shell (dashboard → Display). Sourced after hypr/monitors.conf.\n"
+              + lines.map(l => "monitor = " + l).join("\n") + "\n"
         _writeProc.command = ["bash", "-c", "mkdir -p \"$(dirname \"$1\")\" && printf '%s' \"$2\" > \"$1\"", "_", confPath, body]
         _writeProc.running = true
     }
@@ -95,12 +111,14 @@ QtObject {
     function revert() {
         _revertTimer.stop()
         awaitingConfirm = false
-        _run(_prevLines)
+        _run(_prevCfgs)
     }
 
-    function _run(lines) {
-        var batch = lines.map(l => "keyword monitor " + l).join(" ; ")
-        _applyProc.command = ["hyprctl", "--batch", batch]
+    function _run(cfgs) {
+        var lines = cfgs.map(c => lineFor(c))
+        _applyProc.command = isLua
+            ? ["hyprctl", "eval", lines.join("\n")]
+            : ["hyprctl", "--batch", lines.map(l => "keyword monitor " + l).join(" ; ")]
         _applyProc.running = false
         _applyProc.running = true
     }
