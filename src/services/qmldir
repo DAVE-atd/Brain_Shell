@@ -25,3 +25,4 @@ singleton TailscaleService TailscaleService.qml
 OrbitHost OrbitHost.qml
 singleton MigrationService MigrationService.qml
 singleton DisplayService DisplayService.qml
+singleton ClamavService ClamavService.qml

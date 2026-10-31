@@ -121,6 +121,16 @@ QtObject {
         }
     }
 
+    property var clamav: IpcHandler {
+        target: "clamav-toggle"
+        function toggle() {
+            if (Popups.clamavOpen) { SurfaceState.close(); return }
+            Popups.closeAll()
+            SurfaceState.open("right", "clamav")
+            Popups.clamavPinned = true
+        }
+    }
+
     // ── Network Toggles ──────────────────────────────────────
 
     function _openNetwork(page) {

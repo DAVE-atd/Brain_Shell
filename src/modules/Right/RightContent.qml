@@ -48,6 +48,11 @@ Item {
             localScale: root.localScale
             anchors.verticalCenter: parent.verticalCenter
         }
+        // ClamAV (between Bluetooth, the last icon of Network, and sound)
+        Clamav{
+            localScale: root.localScale
+            anchors.verticalCenter: parent.verticalCenter
+        }
         Audio{ 
             localScale: root.localScale
             anchors.verticalCenter: parent.verticalCenter

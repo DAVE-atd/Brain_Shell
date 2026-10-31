@@ -19,6 +19,7 @@
 pragma Singleton
 import QtQuick
 import "../"
+import "../services"
 
 QtObject {
     property bool _ignoreDefaultTab: false
@@ -40,6 +41,9 @@ QtObject {
     
     readonly property bool networkOpen: SurfaceState.activeContent === "network"
     readonly property bool batteryOpen: SurfaceState.activeContent === "battery"
+    readonly property bool clamavOpen: SurfaceState.activeContent === "clamav"
+    // Opening the ClamAV drop-down marks its detections as seen
+    onClamavOpenChanged: if (clamavOpen) { ClamavService.unseen = false; ClamavService.refresh() }
     readonly property bool notificationsOpen: SurfaceState.activeContent === "notifications"
     readonly property bool archMenuOpen: SurfaceState.activeContent === "archMenu"
     readonly property bool dashboardOpen: SurfaceState.activeContent === "dashboard"
@@ -71,6 +75,7 @@ QtObject {
     // ── Per-popup pinned state (ignores hover-leave) ──────────────────────────
     property bool audioPinned:         false
     property bool batteryPinned:       false
+    property bool clamavPinned:        false
     property bool networkPinned:       false
     property bool notificationsPinned: false
     property bool archMenuPinned:      false
@@ -98,6 +103,7 @@ QtObject {
     property bool archMenuTriggerHovered:      false
     property bool audioTriggerHovered:         false
     property bool batteryTriggerHovered:       false
+    property bool clamavTriggerHovered:        false
     property bool networkTriggerHovered:       false
     property bool notificationsTriggerHovered: false
     property bool wallpaperTriggerHovered:     false
@@ -115,6 +121,7 @@ QtObject {
     property bool dashboardAllowHover:     PrefsService.globalHoverMode && PrefsService.hoverDashboard
     property bool networkAllowHover:     PrefsService.globalHoverMode && PrefsService.hoverNetwork
     property bool batteryAllowHover:     PrefsService.globalHoverMode && PrefsService.hoverNetwork
+    property bool clamavAllowHover:      PrefsService.globalHoverMode && PrefsService.hoverNetwork
 
     // ── Universal popup behavior settings ─────────────────────────────────────
     property int  slideDuration:   Anim.transition
@@ -153,7 +160,7 @@ QtObject {
     // ── Global state ──────────────────────────────────────────────────────────
     signal actionConfirmed(string action)
 
-    readonly property bool anyOpen: audioOpen || networkOpen || batteryOpen
+    readonly property bool anyOpen: audioOpen || networkOpen || batteryOpen || clamavOpen
                                     || notificationsOpen || archMenuOpen
                                     || dashboardOpen || wallpaperOpen || quickOpen
                                     || clipboardOpen
@@ -164,6 +171,7 @@ QtObject {
         miniPlayerOpen      = false
         audioPinned         = false
         batteryPinned       = false
+        clamavPinned        = false
         networkPinned       = false
         notificationsPinned = false
         archMenuPinned      = false

@@ -269,6 +269,7 @@ PanelWindow {
             if (SurfaceState.activeContent === "network") return Math.round(Theme.networkPopupWidth * root.localScale) + Math.round(Theme.cornerRadius * root.localScale);
             if (SurfaceState.activeContent === "audio") return soundPopupView.popupWidth + Math.round(Theme.cornerRadius * root.localScale);
             if (SurfaceState.activeContent === "battery") return batteryPopupView.popupWidth + Math.round(Theme.cornerRadius * root.localScale);
+            if (SurfaceState.activeContent === "clamav") return clamavPopupView.popupWidth + Math.round(Theme.cornerRadius * root.localScale);
             if (SurfaceState.activeContent === "notifications") return notifsPopupView.popupWidth + Math.round(Theme.cornerRadius * root.localScale);
             return Math.round(Theme.popupMaxWidth * root.localScale);
         }
@@ -281,6 +282,7 @@ PanelWindow {
             if (SurfaceState.activeContent === "network") return Math.round(648 * root.localScale);
             if (SurfaceState.activeContent === "audio") return soundPopupView.popupHeight;
             if (SurfaceState.activeContent === "battery") return batteryPopupView.popupHeight;
+            if (SurfaceState.activeContent === "clamav") return clamavPopupView.popupHeight;
             if (SurfaceState.activeContent === "notifications") return notifsPopupView.targetHeight;
             return Math.round(Theme.popupMaxHeight * root.localScale);
         }
@@ -454,6 +456,20 @@ PanelWindow {
             anchors.leftMargin: Math.round(Theme.cornerRadius * root.localScale)
             height: popupHeight - Math.round(Theme.notchHeight * root.localScale)
             opacity: SurfaceState.activeContent === "battery" ? 1 : 0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve; easing.overshoot: Anim.globalOvershoot; easing.amplitude: Anim.globalAmplitude; easing.period: Anim.globalPeriod } }
+        }
+
+        ClamavPopup {
+            id: clamavPopupView
+            localScale: root.localScale
+            anchors.top: parent.top
+            anchors.topMargin: Math.round(Theme.notchHeight * root.localScale)
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: Math.round(Theme.cornerRadius * root.localScale)
+            height: popupHeight - Math.round(Theme.notchHeight * root.localScale)
+            opacity: SurfaceState.activeContent === "clamav" ? 1 : 0
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: Anim.transition; easing.type: Anim.globalCurve; easing.overshoot: Anim.globalOvershoot; easing.amplitude: Anim.globalAmplitude; easing.period: Anim.globalPeriod } }
         }

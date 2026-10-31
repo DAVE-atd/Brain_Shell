@@ -54,6 +54,7 @@ Item {
         else if (SurfaceState.activeContent === "clipboard") Popups.clipboardPinned = true;
         else if (SurfaceState.activeContent === "audio") Popups.audioPinned = true;
         else if (SurfaceState.activeContent === "battery") Popups.batteryPinned = true;
+        else if (SurfaceState.activeContent === "clamav") Popups.clamavPinned = true;
         else if (SurfaceState.activeContent === "quick") Popups.quickPinned = true;
         else if (SurfaceState.activeContent === "notifications") Popups.notificationsPinned = true;
     }
@@ -65,7 +66,7 @@ Item {
     }
 
     // --- GLOBAL HOVER MANAGER ---
-    property bool _anyTriggerHovered: Popups.dashboardTriggerHovered || Popups.archMenuTriggerHovered || Popups.audioTriggerHovered || Popups.batteryTriggerHovered || Popups.networkTriggerHovered || Popups.notificationsTriggerHovered || Popups.wallpaperTriggerHovered || Popups.quickTriggerHovered || Popups.clipboardTriggerHovered
+    property bool _anyTriggerHovered: Popups.dashboardTriggerHovered || Popups.archMenuTriggerHovered || Popups.audioTriggerHovered || Popups.batteryTriggerHovered || Popups.clamavTriggerHovered || Popups.networkTriggerHovered || Popups.notificationsTriggerHovered || Popups.wallpaperTriggerHovered || Popups.quickTriggerHovered || Popups.clipboardTriggerHovered
     
     property bool _activeSurfaceHovered: {
         if (SurfaceState.activeSurface === "top") return isTopHovered;
@@ -105,6 +106,7 @@ Item {
             else if (Popups.archMenuTriggerHovered && Popups.archMenuAllowHover) { Popups.closeAll(); SurfaceState.open("leftCenter", "archMenu") }
             else if (Popups.audioTriggerHovered && Popups.audioAllowHover) { Popups.closeAll(); SurfaceState.open("right", "audio") }
             else if (Popups.batteryTriggerHovered && Popups.batteryAllowHover) { Popups.closeAll(); SurfaceState.open("right", "battery") }
+            else if (Popups.clamavTriggerHovered && Popups.clamavAllowHover) { Popups.closeAll(); SurfaceState.open("right", "clamav") }
             else if (Popups.networkTriggerHovered && Popups.networkAllowHover) { Popups.closeAll(); SurfaceState.open("right", "network") } 
             else if (Popups.notificationsTriggerHovered && Popups.notificationsAllowHover) { Popups.closeAll(); SurfaceState.open("right", "notifications") }
             else if (Popups.wallpaperTriggerHovered && Popups.wallpaperAllowHover) { Popups.closeAll(); SurfaceState.open("bottomCenter", "wallpaper") }
@@ -123,6 +125,7 @@ Item {
                 if (SurfaceState.activeContent === "archMenu" && Popups.archMenuPinned) return;
                 if (SurfaceState.activeContent === "audio" && Popups.audioPinned) return;
                 if (SurfaceState.activeContent === "battery" && Popups.batteryPinned) return;
+                if (SurfaceState.activeContent === "clamav" && Popups.clamavPinned) return;
                 if (SurfaceState.activeContent === "network" && Popups.networkPinned) return;
                 if (SurfaceState.activeContent === "notifications" && Popups.notificationsPinned) return;
                 if (SurfaceState.activeContent === "wallpaper" && Popups.wallpaperPinned) return;
