@@ -65,9 +65,11 @@ QtObject {
         if (busy) return
         busy = true
         enabled = on
+        // One unit per systemctl call: with several units systemd doesn't pass the unit name
+        // to polkit, and the NixOS rule only allows these three units
         _toggleProc.command = ["bash", "-c", on
-            ? "rm -f \"$1\" && systemctl start clamav-daemon.socket clamav-clamonacc.service"
-            : "touch \"$1\" && systemctl stop clamav-clamonacc.service clamav-daemon.service clamav-daemon.socket",
+            ? "rm -f \"$1\" && systemctl start clamav-daemon.socket && systemctl start clamav-clamonacc.service"
+            : "touch \"$1\" && systemctl stop clamav-clamonacc.service && systemctl stop clamav-daemon.socket && systemctl stop clamav-daemon.service",
             "_", offFlag]
         _toggleProc.running = true
     }
@@ -125,7 +127,7 @@ QtObject {
             "command -v clamscan >/dev/null && [ -d \"$1\" ] && echo avail; " +
             "[ -e \"$2\" ] && echo off; " +
             "systemctl is-active -q clamav-clamonacc.service && echo mon; " +
-            "clamscan -V 2>/dev/null | head -1; " +
+            "sigtool --info /var/lib/clamav/daily.c?d 2>/dev/null | grep '^Version:'; " +
             "stat -c %Y /var/lib/clamav/daily.c?d 2>/dev/null | sort -n | tail -1",
             "_", root.flagDir, root.offFlag]
         stdout: StdioCollector {
@@ -135,8 +137,8 @@ QtObject {
                 root.enabled    = lines.indexOf("off") < 0
                 root.monitoring = lines.indexOf("mon") >= 0
                 for (var i = 0; i < lines.length; i++) {
-                    // "ClamAV 1.5.4/27812/Fri Oct 30 08:21:00 2026"
-                    var v = /^ClamAV [^/]+\/(\d+)\//.exec(lines[i])
+                    // sigtool: "Version: 28170" (clamscan -V doesn't know the database dir)
+                    var v = /^Version: (\d+)/.exec(lines[i])
                     if (v) root.sigVersion = v[1]
                     if (/^\d{9,}$/.test(lines[i])) root.sigDate = parseInt(lines[i]) * 1000
                 }
