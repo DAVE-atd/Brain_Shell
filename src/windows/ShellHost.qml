@@ -33,6 +33,7 @@ ShellRoot {
     
     property var _keybinds: KeybindService
     property var _updater:  UpdateService
+    property var _usbguard: UsbguardService
     property var _ipc:      IpcManager
     property var _migrator: MigrationService
 

@@ -22,7 +22,7 @@ import "../services"
 import "../"
 
 // ClamAV drop-down (right notch, like battery): real-time protection switch,
-// shield with status, system scan and the latest detections.
+// shield with status, system scan, the latest detections and known CVEs (vulnix).
 
 Item {
     id: root
@@ -37,6 +37,11 @@ Item {
     onOpacityChanged: if (opacity === 1) forceActiveFocus()
 
     readonly property var cs: ClamavService
+    readonly property var vx: VulnixService
+
+    function sevColor(score) {
+        return score >= 9 ? Theme.error : score >= 7 ? "#f5a97f" : score >= 4 ? "#f5c47a" : Theme.subtext
+    }
     readonly property color protColor: !cs.enabled ? Theme.subtext
                                      : (cs.unseen || cs.scanState === "infected") ? Theme.error
                                      : Theme.active
@@ -311,12 +316,157 @@ Item {
                 }
             }
         }
+
+        // ── Vulnerabilities (vulnix) ──────────────────────────────────────────
+        Item {
+            width: parent.width; height: vulnLabel.implicitHeight
+            visible: vx.available
+            Label { id: vulnLabel; text: "VULNERABILITIES" }
+            Row {
+                anchors { right: parent.right; verticalCenter: parent.verticalCenter }
+                spacing: s(6)
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    font.pixelSize: s(9); color: Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.35)
+                    text: vx.running ? "checking…" : vx.failed ? "check failed" : vx.checkedAt ? "checked " + root.ago(vx.checkedAt) : ""
+                }
+                Text {
+                    id: recheck
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "󰑐"; font.pixelSize: s(12)
+                    color: recheckHov.hovered ? Theme.active : Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.45)
+                    RotationAnimation on rotation {
+                        running: vx.running && root.visible; loops: Animation.Infinite; from: 0; to: 360; duration: 1200
+                        onRunningChanged: if (!running) recheck.rotation = 0
+                    }
+                    HoverHandler { id: recheckHov; cursorShape: Qt.PointingHandCursor }
+                    MouseArea { anchors.fill: parent; anchors.margins: -s(4); onClicked: { Popups.clamavPinned = true; vx.check() } }
+                }
+            }
+        }
+
+        Rectangle {
+            width: parent.width
+            visible: vx.available
+            height: vulnCol.implicitHeight + s(16)
+            radius: s(Theme.cornerRadius)
+            color: Theme.card
+
+            Column {
+                id: vulnCol
+                anchors { left: parent.left; right: parent.right; top: parent.top; margins: s(8) }
+                spacing: s(4)
+
+                // Summary: count + severity chips
+                Item {
+                    width: parent.width; height: s(40)
+                    Text {
+                        id: vulnCount
+                        anchors { left: parent.left; leftMargin: s(6); verticalCenter: parent.verticalCenter }
+                        text: vx.packages.length === 0 && !vx.running ? "󰄬" : vx.packages.length
+                        font.pixelSize: s(24); font.weight: Font.Bold
+                        color: vx.packages.length === 0 ? Theme.active : vx.critical > 0 ? Theme.error : Theme.text
+                    }
+                    Column {
+                        anchors { left: vulnCount.right; leftMargin: s(10); right: chips.left; rightMargin: s(8); verticalCenter: parent.verticalCenter }
+                        Text {
+                            width: parent.width; elide: Text.ElideRight
+                            font.pixelSize: s(12); font.weight: Font.Medium; color: Theme.text
+                            text: vx.packages.length === 0
+                                ? (vx.running && !vx.checkedAt ? "Checking system packages…" : "No known vulnerabilities")
+                                : "package" + (vx.packages.length > 1 ? "s" : "") + " with known CVEs"
+                        }
+                        Text {
+                            width: parent.width; elide: Text.ElideRight
+                            font.pixelSize: s(10); color: Theme.subtext
+                            text: "In the running system · may include false alarms"
+                        }
+                    }
+                    Row {
+                        id: chips
+                        anchors { right: parent.right; rightMargin: s(4); verticalCenter: parent.verticalCenter }
+                        spacing: s(5)
+                        Chip { visible: vx.critical > 0; text: vx.critical + " critical"; tint: Theme.error }
+                        Chip { visible: vx.high > 0; text: vx.high + " high"; tint: root.sevColor(7) }
+                    }
+                }
+
+                ListView {
+                    id: vulnList
+                    width: parent.width
+                    visible: count > 0
+                    readonly property int rowH: s(40)
+                    property bool expanded: false
+                    model: vx.packages.slice(0, expanded ? vx.packages.length : 3)
+                    height: Math.min(count, expanded ? 7 : 3) * rowH
+                    interactive: expanded
+                    clip: true
+                    boundsBehavior: Flickable.StopAtBounds
+                    delegate: Rectangle {
+                        required property var modelData
+                        width: vulnList.width; height: vulnList.rowH
+                        radius: s(8)
+                        color: rowHov.hovered ? Theme.cardHover : "transparent"
+                        Rectangle {
+                            id: badge
+                            width: s(34); height: s(22); radius: height / 2
+                            anchors { left: parent.left; leftMargin: s(4); verticalCenter: parent.verticalCenter }
+                            readonly property color c: root.sevColor(modelData.score)
+                            color: Qt.rgba(c.r, c.g, c.b, 0.16)
+                            Text { anchors.centerIn: parent; text: modelData.score ? modelData.score.toFixed(1) : "?"; font.pixelSize: s(10); font.weight: Font.Bold; color: badge.c }
+                        }
+                        Column {
+                            anchors { left: badge.right; leftMargin: s(10); right: ignoreBtn.left; rightMargin: s(6); verticalCenter: parent.verticalCenter }
+                            Text {
+                                width: parent.width; elide: Text.ElideRight; font.pixelSize: s(12); font.weight: Font.Medium; color: Theme.text
+                                text: modelData.pname + "  " + modelData.versions.join(", ")
+                            }
+                            Text {
+                                width: parent.width; elide: Text.ElideRight; font.pixelSize: s(10); color: Theme.subtext
+                                text: modelData.cves.length + " CVE" + (modelData.cves.length > 1 ? "s" : "") + " · " + modelData.top
+                            }
+                        }
+                        Text {
+                            id: ignoreBtn
+                            anchors { right: parent.right; rightMargin: s(8); verticalCenter: parent.verticalCenter }
+                            visible: rowHov.hovered
+                            text: "󰈉"; font.pixelSize: s(14)
+                            color: ignHov.hovered ? Theme.text : Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.4)
+                            HoverHandler { id: ignHov; cursorShape: Qt.PointingHandCursor }
+                            MouseArea { anchors.fill: parent; anchors.margins: -s(4); z: 1; onClicked: { Popups.clamavPinned = true; vx.ignore(modelData.pname) } }
+                        }
+                        HoverHandler { id: rowHov; cursorShape: Qt.PointingHandCursor }
+                        // Click: details of the worst CVE on nvd.nist.gov
+                        MouseArea { anchors { fill: parent; rightMargin: s(30) } onClicked: { Popups.clamavPinned = true; vx.openCve(modelData.top) } }
+                    }
+                }
+
+                Text {
+                    visible: vx.packages.length > 3
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    topPadding: s(2); bottomPadding: s(2)
+                    text: vulnList.expanded ? "Show less" : "Show all " + vx.packages.length
+                    font.pixelSize: s(10); font.weight: Font.Medium
+                    color: moreHov.hovered ? Theme.active : Theme.subtext
+                    HoverHandler { id: moreHov; cursorShape: Qt.PointingHandCursor }
+                    MouseArea { anchors.fill: parent; onClicked: { Popups.clamavPinned = true; vulnList.expanded = !vulnList.expanded } }
+                }
+            }
+        }
     }
 
     // ── Components ────────────────────────────────────────────────────────────
     component Label: Text {
         font.pixelSize: root.s(9); font.weight: Font.Bold; font.letterSpacing: 1.2
         color: Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.3)
+    }
+
+    component Chip: Rectangle {
+        property alias text: chipText.text
+        property color tint: Theme.text
+        width: chipText.implicitWidth + root.s(14); height: root.s(20); radius: height / 2
+        color: Qt.rgba(tint.r, tint.g, tint.b, 0.15)
+        Text { id: chipText; anchors.centerIn: parent; font.pixelSize: root.s(9); font.weight: Font.Bold; color: parent.tint }
     }
 
     component Stat: Row {

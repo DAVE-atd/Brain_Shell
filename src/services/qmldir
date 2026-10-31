@@ -26,3 +26,5 @@ OrbitHost OrbitHost.qml
 singleton MigrationService MigrationService.qml
 singleton DisplayService DisplayService.qml
 singleton ClamavService ClamavService.qml
+singleton VulnixService VulnixService.qml
+singleton UsbguardService UsbguardService.qml
